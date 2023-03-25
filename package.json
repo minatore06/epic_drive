@@ -1,0 +1,27 @@
+{
+  "name": "epic_drive",
+  "version": "0.2.5",
+  "description": "An online personal drive",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minatore06/epic_drive.git"
+  },
+  "keywords": [
+    "drive"
+  ],
+  "author": "Oshino_Mina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minatore06/epic_drive/issues"
+  },
+  "homepage": "https://github.com/minatore06/epic_drive#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
