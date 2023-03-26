@@ -1,6 +1,6 @@
 {
   "name": "epic_drive",
-  "version": "0.2.5",
+  "version": "0.3.5",
   "description": "An online personal drive",
   "main": "server.js",
   "scripts": {

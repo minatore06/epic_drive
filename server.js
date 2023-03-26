@@ -38,7 +38,23 @@ app.listen(8080, ()=>{
             console.log(result);
             res.send(JSON.stringify(result));
         })
-    })
+    }),
+    app.get('/sendfile', (req, res) => {
+        let fullPath = path.join(__dirname, 'storage', req.query.path);
+        console.log(fullPath);
+        if (!fullPath.includes(path.join(__dirname, 'storage')))
+            return res.status(403).send();
+        res.download(fullPath, (error) => {
+            if (error){
+                console.log(error);
+                try {
+                    res.status(400).send(error.code);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        })
+    }),
     app.get('*', (req, res) =>{
         res.status(404).sendFile("./404.html", {root: __dirname})
     })
