@@ -51,3 +51,7 @@ function _html5Saver(blob , fileName) {
 
     document.body.removeChild(a);
 }
+
+function uploadFiles() {
+    console.log(document.getElementById("fileInput").files[0]);
+}

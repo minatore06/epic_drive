@@ -11,11 +11,15 @@
     <title>Home</title>
     <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
     <link rel="stylesheet" href="./styles/style.css">
-    <script src="scripts/script.js"></script>
+    <script src="./scripts/script.js"></script>
 </head>
 <body>
     <h1>Mina's epic drive</h1>
-    <button onclick="get_files('.')">Get List</button>
+    <button onclick="get_files('.')">Get List</button><br><br><br>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="fileInput">Select file to upload here:</label><br><input type="file" id="fileInput" name="fileInput" multiple>
+        <button onclick="uploadFiles()">Submit</button>
+    </form>
     <div id="file_list"></div>
 </body>
 </html>
