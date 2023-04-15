@@ -4,6 +4,7 @@ function get_files(directory) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let files = JSON.parse(xmlHttp.responseText);
+            document.getElementById("uploadBTN").setAttribute("onClick", `uploadFiles('${directory}')`)
             document.getElementById("file_list").innerHTML = "";
             if (directory != '.')
                 document.getElementById("file_list").innerHTML += `<p onclick=get_files('${directory}/..')>../</p>`;
@@ -19,6 +20,27 @@ function get_files(directory) {
     }
     xmlHttp.open("GET", url, true)
     xmlHttp.send()
+}
+
+function uploadFiles(path) {
+    let files = document.getElementById("fileInput").files;
+    var xmlHttp = new XMLHttpRequest();
+    let url = "http://ononoki.ddns.net:8080/uploadfile?path="+path
+    var formData = new FormData();
+    Array.from(files).forEach(file => {
+        formData.append('file', file)
+    })
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            alert("Upload succeded")
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            alert("Access denied");
+        }
+    }
+    xmlHttp.open("POST", url, true)
+    xmlHttp.send(formData)
+    alert("SALTO!!!");
+
 }
 
 function download_file(path){
@@ -52,6 +74,6 @@ function _html5Saver(blob , fileName) {
     document.body.removeChild(a);
 }
 
-function uploadFiles() {
+/* function uploadFiles() {
     console.log(document.getElementById("fileInput").files[0]);
-}
+} */

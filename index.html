@@ -16,10 +16,8 @@
 <body>
     <h1>Mina's epic drive</h1>
     <button onclick="get_files('.')">Get List</button><br><br><br>
-    <form method="POST" enctype="multipart/form-data">
-        <label for="fileInput">Select file to upload here:</label><br><input type="file" id="fileInput" name="fileInput" multiple>
-        <button onclick="uploadFiles()">Submit</button>
-    </form>
+    <label for="fileInput">Select file to upload here:</label><br><input type="file" id="fileInput" name="fileInput" multiple>
+    <button id="uploadBTN" onclick="uploadFiles('.')">Submit</button>
     <div id="file_list"></div>
 </body>
 </html>
