@@ -44,7 +44,7 @@ app.listen(8080, ()=>{
         let fullPath = path.join(__dirname, 'storage', req.query.path);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
+        return res.status(403).send();
         res.download(fullPath, (error) => {
             if (error){
                 console.log(error);
@@ -55,6 +55,17 @@ app.listen(8080, ()=>{
                 }
             }
         })
+    }),
+    app.post('/createdirectory', (req, res) => {
+        let fullPath = path.join(__dirname, 'storage', req.query.path, req.query.name);
+        console.log(fullPath);
+        if (!fullPath.includes(path.join(__dirname, 'storage')))
+            return res.status(403).send();
+        fs.mkdir(fullPath, {recursive: true}, (err) => {
+            if (err)
+                return res.status(400).send();
+            res.status(200).send();
+        });
     }),
     app.post('/uploadfile', (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);

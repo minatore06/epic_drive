@@ -1,3 +1,5 @@
+var cur_path;
+
 function get_files(directory) {
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/getfiles?folder="+directory
@@ -14,11 +16,30 @@ function get_files(directory) {
                 else
                     document.getElementById("file_list").innerHTML += `<p onclick='download_file("${directory}/${file.name}")'>FILE: ${file.name}</p>`;
             });
+            document.getElementById("file_list").innerHTML += `<button onclick='create_folder("${directory}")'>Create Folder</button>`
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
             alert("Access denied");
         }
     }
     xmlHttp.open("GET", url, true)
+    xmlHttp.send()
+}
+
+function create_folder(path) {
+    var xmlHttp = new XMLHttpRequest();
+    let dir_name = window.prompt("Folder name", "folder");
+    let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            alert("Folder created successfully");
+            get_files(path);
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
+            alert("Folder creation error");
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            alert("Access denied");
+        }
+    }
+    xmlHttp.open("POST", url, true)
     xmlHttp.send()
 }
 
