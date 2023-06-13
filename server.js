@@ -93,6 +93,34 @@ app.listen(8080, ()=>{
         }
         res.status(200).send();
     }),
+    app.delete('/deleteFile', (req, res) => {
+        let fullPath = path.join(__dirname, 'storage', req.query.path);
+        console.log(fullPath);
+        if (!fullPath.includes(path.join(__dirname, 'storage')))
+            return res.status(403).send();
+        fs.unlink(fullPath, (err) => {
+            if (err){
+                console.log(err);
+                return res.status(400).send();
+            }
+            res.status(200).send();
+        })
+    }),
+    app.delete('/deleteDir', (req, res) => {
+        let fullPath = path.join(__dirname, 'storage', req.query.path);
+        console.log(fullPath);
+        if (!fullPath.includes(path.join(__dirname, 'storage')))
+            return res.status(403).send();
+        fs.rmdir(fullPath, (err) => {
+            if (err){
+                if (err.code == "ENOTEMPTY")
+                    return res.status(409).send();
+                console.log(err);
+                return res.status(400).send();
+            }
+            res.status(200).send();
+        })
+    }),
     app.get('*', (req, res) =>{
         res.status(404).sendFile("./404.html", {root: __dirname})
     })

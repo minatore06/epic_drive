@@ -12,9 +12,9 @@ function get_files(directory) {
                 document.getElementById("file_list").innerHTML += `<p onclick=get_files('${directory}/..')>../</p>`;
             files.forEach(file => {
                 if (file.isDirectory)
-                    document.getElementById("file_list").innerHTML += `<p onclick='get_files("${directory}/${file.name}")'>FOLDER: ${file.name}/</p>`;
+                    document.getElementById("file_list").innerHTML += `<p><div onclick='get_files("${directory}/${file.name}")'>FOLDER: ${file.name}/</div><button onclick='delete_dir("${directory}","${file.name}")'>Delete</button></p>`;
                 else
-                    document.getElementById("file_list").innerHTML += `<p onclick='download_file("${directory}/${file.name}")'>FILE: ${file.name}</p>`;
+                    document.getElementById("file_list").innerHTML += `<p><div onclick='download_file("${directory}/${file.name}")'>FILE: ${file.name}</div><button onclick='delete_file("${directory}","${file.name}")'>Delete</button></p>`;
             });
             document.getElementById("file_list").innerHTML += `<button onclick='create_folder("${directory}")'>Create Folder</button>`
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
@@ -40,6 +40,42 @@ function create_folder(path) {
         }
     }
     xmlHttp.open("POST", url, true)
+    xmlHttp.send()
+}
+
+function delete_file(path, file) {
+    var xmlHttp = new XMLHttpRequest();
+    let url = "http://ononoki.ddns.net:8080/deleteFile?path="+path+"/"+file
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            alert("File deleted successfully");
+            get_files(path);
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
+            alert("File deletion error");
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            alert("Access denied");
+        }
+    }
+    xmlHttp.open("DELETE", url, true)
+    xmlHttp.send()
+}
+
+function delete_dir(path, file) {
+    var xmlHttp = new XMLHttpRequest();
+    let url = "http://ononoki.ddns.net:8080/deleteDir?path="+path+"/"+file
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            alert("Folder deleted successfully");
+            get_files(path);
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
+            alert("Folder deletion error");
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            alert("Access denied");
+        } else if (xmlHttp.readyState == 4 && xmlHttp.status == 409){
+            alert("Folder not empty");
+        }
+    }
+    xmlHttp.open("DELETE", url, true)
     xmlHttp.send()
 }
 
