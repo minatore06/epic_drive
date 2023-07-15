@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 
 const corsOptions = {
-    origin: 'http://ononoki.ddns.net:8080',
+    origin: 'http://ononoki.ddns.net',
 }
 
 console.log("epico")
@@ -17,7 +17,7 @@ app.use(express.static(__dirname+'/public'));
 app.use(express.json())
 
 
-app.listen(8080, ()=>{
+app.listen(80, ()=>{
     app.get('/', (req, res)=>{
         res.sendFile("./index.html", {root: __dirname})
     }),
