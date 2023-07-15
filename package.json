@@ -1,6 +1,6 @@
 {
   "name": "epic_drive",
-  "version": "0.3.5",
+  "version": "0.5",
   "description": "An online personal drive",
   "main": "server.js",
   "scripts": {
@@ -21,7 +21,11 @@
   },
   "homepage": "https://github.com/minatore06/epic_drive#readme",
   "dependencies": {
+    "busboy": "^1.6.0",
+    "connect-busboy": "^1.0.0",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "multer": "^1.4.5-lts.1"
   }
 }
