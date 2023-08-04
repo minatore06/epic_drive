@@ -1,5 +1,35 @@
 var cur_path;
 
+function login() {
+    let email = Document.getElementById('email').values;
+    let password = Document.getElementById('password').value;
+
+    if(!email)
+        return (Document.getElementById("email-label").innerHTML += "<br>Required field");
+    if(!password)
+        return (Document.getElementById("password-label").innerHTML += "<br>Required field");
+    
+    password = hash(password);
+    let profileJson = {
+        "email": email,
+        "password":password,
+        "ruolo":""
+    }
+
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/createAuthentication';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            const token = JSON.parse(xmlHttp.responseText);
+            sessionStorage.setItem("token", token);
+        }
+    }
+    xmlHttp.open('POST', url);
+    xmlHttp.setRequestHeader("content-Type", "application/json");
+    xmlHttp.send(JSON.stringify({"profilo":profileJson}));
+}
+
 function get_files(directory) {
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net/getfiles?folder="+directory
@@ -131,3 +161,14 @@ function _html5Saver(blob , fileName) {
     document.body.removeChild(a);
 }
 
+
+function hash(string) {
+    const utf8 = new TextEncoder().encode(string);
+    return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((bytes) => bytes.toString(16).padStart(2, '0'))
+        .join('');
+      return hashHex;
+    });
+  }

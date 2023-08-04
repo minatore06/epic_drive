@@ -3,6 +3,11 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+dotenv.config();
+process.env.TOKEN_SECRET = require('crypto').randomBytes(64).toString('hex');
 
 const app = express();
 
@@ -20,9 +25,12 @@ app.use(fileUpload());
 
 app.listen(80, ()=>{
     app.get('/', (req, res)=>{
+        res.sendFile("./login.html", {root: __dirname})
+    }),
+    app.get('/home', (req, res)=>{
         res.sendFile("./index.html", {root: __dirname})
     }),
-    app.get('/getfiles', (req, res) => {
+    app.get('/getfiles', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.folder);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -40,7 +48,7 @@ app.listen(80, ()=>{
             res.send(JSON.stringify(result));
         })
     }),
-    app.get('/sendfile', (req, res) => {
+    app.get('/sendfile', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -56,7 +64,7 @@ app.listen(80, ()=>{
             }
         })
     }),
-    app.post('/createdirectory', (req, res) => {
+    app.post('/createdirectory', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path, req.query.name);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -67,7 +75,7 @@ app.listen(80, ()=>{
             res.status(200).send();
         });
     }),
-    app.post('/uploadfile', (req, res) => {
+    app.post('/uploadfile', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);
         let files = req.files.file;
         console.log(fullPath);
@@ -93,7 +101,7 @@ app.listen(80, ()=>{
         }
         res.status(200).send();
     }),
-    app.delete('/deleteFile', (req, res) => {
+    app.delete('/deleteFile', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -106,7 +114,7 @@ app.listen(80, ()=>{
             res.status(200).send();
         })
     }),
-    app.delete('/deleteDir', (req, res) => {
+    app.delete('/deleteDir', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);
         console.log(fullPath);
         if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -121,7 +129,34 @@ app.listen(80, ()=>{
             res.status(200).send();
         })
     }),
+    app.post('/createAuthentication', async(req, res) => {
+        let {email} = req.body;
+        let ruolo;
+        //search if present in db
+        const token = generateAccessToken({"email":req.body.email, "password":req.body.crypted, "ruolo":ruolo});
+        res.json(token);
+    }),
     app.get('*', (req, res) =>{
         res.status(404).sendFile("./404.html", {root: __dirname})
     })
 })
+
+function generateAccessToken(user){
+    return jwt.sign({"email":user.email, "password":user.password, "ruolo":user.ruolo}, process.env.TOKEN_SECRET, {expiresIn: '30m'});
+}
+
+function authenticateToken(req, res, next){
+    const authHeader = req.headers['authorization']
+    const token = authHeader.split(' ')[1]
+    if (token == null) return res.sendStatus(401)
+
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
+        if(err){
+            console.log(err)
+            if(err.name == "TokenExpiredError")return res.location("http://ononoki.ddns.net:8443/#out")
+            return res.sendStatus(403)
+        }
+        req.user = user
+        next()
+    })
+}
