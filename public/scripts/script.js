@@ -3,6 +3,11 @@ var cur_path;
 function checkLogin() {
     let token = sessionStorage.getItem('token');
 
+    if (location.hash == '#out') {
+        location.hash = '';
+        return logout();
+    }
+
     if (token)
     {
         let xmlHttp = new XMLHttpRequest();
@@ -254,7 +259,6 @@ function _html5Saver(blob , fileName) {
 
     document.body.removeChild(a);
 }
-
 
 function hash(string) {
     const utf8 = new TextEncoder().encode(string);
