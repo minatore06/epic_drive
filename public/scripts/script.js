@@ -9,11 +9,13 @@ function checkLogin() {
 
         const url = 'http://ononoki.ddns.net/authenticateToken';
         xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                window.location.replace("http://ononoki.ddns.net/home")
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 200) {
+                    window.location.replace("http://ononoki.ddns.net/home")
+                }
+                else if (xmlHttp.status == 403 || xmlHttp.status == 401)
+                    logout();
             }
-            else if (xmlHttp.readyState == 4 && xmlHttp.status == 401)
-                logout();
         }
         xmlHttp.open('POST', url);
         xmlHttp.setRequestHeader("content-Type", "application/json");
@@ -42,11 +44,14 @@ function login() {
     let email = Document.getElementById('email').values;
     let password = Document.getElementById('password').value;
 
+    Document.getElementById("email-label").innerHTML = "<b>e-mail</b>";
+    Document.getElementById("password-label").innerHTML = "<b>password</b>";
+
     if(!email)
         return (Document.getElementById("email-label").innerHTML += "<br>Required field");
     if(!password)
         return (Document.getElementById("password-label").innerHTML += "<br>Required field");
-    
+
     password = hash(password);
     let profileJson = {
         "email": email,
@@ -58,9 +63,60 @@ function login() {
 
     const url = 'http://ononoki.ddns.net/createAuthentication';
     xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            const token = JSON.parse(xmlHttp.responseText);
-            sessionStorage.setItem("token", token);
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                    const token = JSON.parse(xmlHttp.responseText);
+                    sessionStorage.setItem("token", token);
+                    window.location.replace("http://ononoki.ddns.net/home");
+            } else if (xmlHttp.status == 403) {
+                Document.getElementById("email-label").innerHTML += "<br>Wrong email";
+                Document.getElementById("password-label").innerHTML += "<br>Wrong password";
+            }
+        }
+    }
+    xmlHttp.open('POST', url);
+    xmlHttp.setRequestHeader("content-Type", "application/json");
+    xmlHttp.send(JSON.stringify({"profilo":profileJson}));
+}
+
+function signup() {
+    let email = Document.getElementById('email1').values;
+    let password = Document.getElementById('password1').value;
+    let rpassword = Document.getElementById('password2').value;
+
+    Document.getElementById("email-label1").innerHTML = "<b>e-mail</b>";
+    Document.getElementById("password-label1").innerHTML = "<b>password</b>";
+    Document.getElementById("password-label2").innerHTML = "<b>confirm password</b>";
+
+    if(!email)
+        return (Document.getElementById("email-label1").innerHTML += "<br>Required field");
+    if(!password)
+        return (Document.getElementById("password-label1").innerHTML += "<br>Required field");
+    if(!rpassword)
+        return (Document.getElementById("password-label2").innerHTML += "<br>Required field");
+    if (password !== rpassword)
+        return (Document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
+
+    rpassword = null;
+    password = hash(password);
+    let profileJson = {
+        "email": email,
+        "password":password,
+        "ruolo":"user"
+    }
+
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/createUser';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                    const token = JSON.parse(xmlHttp.responseText);
+                    sessionStorage.setItem("token", token);
+                    window.location.replace("http://ononoki.ddns.net/home");
+            } else if (xmlHttp.status == 403) {
+                Document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
+            }
         }
     }
     xmlHttp.open('POST', url);

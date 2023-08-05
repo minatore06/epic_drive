@@ -129,12 +129,19 @@ app.listen(80, ()=>{
             res.status(200).send();
         })
     }),
+    app.post('/createUser', async(req, res) => {
+        let {email, password, ruolo} = req.body;
+
+        //search if present in db (400)
+        //add to db
+        const token = generateAccessToken({"email":email, "password":password, "ruolo":ruolo});
+        res.json(token)
+    })
     app.post('/createAuthentication', async(req, res) => {
         let {email} = req.body;
         let ruolo;
         //search if present in db
-        //403 wrong password
-        //
+        //403 wrong password/email not present
         const token = generateAccessToken({"email":req.body.email, "password":req.body.crypted, "ruolo":ruolo});
         res.json(token);
     }),
@@ -176,3 +183,9 @@ function authenticateToken(req, res, next){
         next()
     })
 }
+/*
+admin (authenticated, access to everything)
+member (authenticated, with personal space)
+user (authenticated, no personal space)
+guest (not autheticated)
+*/
