@@ -72,7 +72,7 @@ app.listen(80, ()=>{
         fs.mkdir(fullPath, {recursive: true}, (err) => {
             if (err)
                 return res.status(400).send();
-            res.status(200).send();
+            res.status(201).send();
         });
     }),
     app.post('/uploadfile', authenticateToken, (req, res) => {
@@ -80,7 +80,7 @@ app.listen(80, ()=>{
         let files = req.files.file;
         console.log(fullPath);
         console.log(files);
-
+//413 payload too large
         if (Array.isArray(files)){
             Object.keys(files).forEach(key => {
                 let file = files[key]
@@ -99,7 +99,7 @@ app.listen(80, ()=>{
                 }
             })
         }
-        res.status(200).send();
+        res.status(201).send();
     }),
     app.delete('/deleteFile', authenticateToken, (req, res) => {
         let fullPath = path.join(__dirname, 'storage', req.query.path);
@@ -133,7 +133,23 @@ app.listen(80, ()=>{
         let {email} = req.body;
         let ruolo;
         //search if present in db
+        //403 wrong password
+        //
         const token = generateAccessToken({"email":req.body.email, "password":req.body.crypted, "ruolo":ruolo});
+        res.json(token);
+    }),
+    app.post('/authenticateToken', async(req, res) => {
+        let {token} = req.body;
+        
+        jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
+            if(err){
+                console.log(err)
+                if(err.name == "TokenExpiredError")return res.sendStatus(403).location("http://ononoki.ddns.net:8443/#out")
+                return res.sendStatus(401)
+            }
+            res.sendStatus(200);
+        })
+        
         res.json(token);
     }),
     app.get('*', (req, res) =>{
@@ -153,8 +169,8 @@ function authenticateToken(req, res, next){
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
             console.log(err)
-            if(err.name == "TokenExpiredError")return res.location("http://ononoki.ddns.net:8443/#out")
-            return res.sendStatus(403)
+            if(err.name == "TokenExpiredError")return res.sendStatus(401).location("http://ononoki.ddns.net:8443/#out")
+            return res.sendStatus(401)
         }
         req.user = user
         next()

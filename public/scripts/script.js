@@ -1,5 +1,43 @@
 var cur_path;
 
+function checkLogin() {
+    let token = sessionStorage.getItem('token');
+
+    if (token)
+    {
+        let xmlHttp = new XMLHttpRequest();
+
+        const url = 'http://ononoki.ddns.net/authenticateToken';
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                window.location.replace("http://ononoki.ddns.net/home")
+            }
+            else if (xmlHttp.readyState == 4 && xmlHttp.status == 401)
+                logout();
+        }
+        xmlHttp.open('POST', url);
+        xmlHttp.setRequestHeader("content-Type", "application/json");
+        xmlHttp.send(JSON.stringify({"token":token}));
+    }
+}
+
+function toggleSignInUp(signin) {
+    if (signin) {
+        Document.getElementByClass("signin").style.display = "none";
+        Document.getElementByClass("signup").style.display = "block";
+        Document.getElementById("change-login-display").innerHTML = '<a onclick="toggleSignInUp(0)">signin</a> | sign-up';
+    }
+    else {
+        Document.getElementByClass("signin").style.display = "block";
+        Document.getElementByClass("signup").style.display = "none";
+        Document.getElementById("change-login-display").innerHTML = 'signin | <a onclick="toggleSignInUp(1)">sign-up</a>';
+    }
+}
+
+function logout() {
+    sessionStorage.setItem('token', "");
+}
+
 function login() {
     let email = Document.getElementById('email').values;
     let password = Document.getElementById('password').value;
@@ -60,7 +98,7 @@ function create_folder(path) {
     let dir_name = window.prompt("Folder name", "folder");
     let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
     xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Folder created successfully");
             get_files(path);
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
@@ -118,7 +156,7 @@ function uploadFiles(path) {
         formData.append('file', file)
     })
     xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Upload succeded")
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
             alert("Access denied");
