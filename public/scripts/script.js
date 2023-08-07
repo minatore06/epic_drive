@@ -1,6 +1,7 @@
 var cur_path;
 
 function checkLogin() {
+    const csrfToken = getCsrfToken();
     let token = sessionStorage.getItem('token');
 
     if (location.hash == '#out') {
@@ -23,7 +24,8 @@ function checkLogin() {
             }
         }
         xmlHttp.open('POST', url);
-        xmlHttp.setRequestHeader("content-Type", "application/json");
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
         xmlHttp.send(JSON.stringify({"token":token}));
     }
 }
@@ -42,10 +44,13 @@ function toggleSignInUp(signin) {
 }
 
 function logout() {
+    const csrfToken = getCsrfToken();
+//    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken);
     sessionStorage.setItem('token', "");
 }
 
 function login() {
+    const csrfToken = getCsrfToken();
     let email = Document.getElementById('email').values;
     let password = Document.getElementById('password').value;
 
@@ -80,7 +85,8 @@ function login() {
         }
     }
     xmlHttp.open('POST', url);
-    xmlHttp.setRequestHeader("content-Type", "application/json");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send(JSON.stringify({"profilo":profileJson}));
 }
 
@@ -125,7 +131,8 @@ function signup() {
         }
     }
     xmlHttp.open('POST', url);
-    xmlHttp.setRequestHeader("content-Type", "application/json");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send(JSON.stringify({"profilo":profileJson}));
 }
 
@@ -155,6 +162,7 @@ function get_files(directory) {
 }
 
 function create_folder(path) {
+    const csrfToken = getCsrfToken();
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
     let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
@@ -169,10 +177,12 @@ function create_folder(path) {
         }
     }
     xmlHttp.open("POST", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send()
 }
 
 function delete_file(path, file) {
+    const csrfToken = getCsrfToken();
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -186,10 +196,12 @@ function delete_file(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send()
 }
 
 function delete_dir(path, file) {
+    const csrfToken = getCsrfToken();
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -205,10 +217,12 @@ function delete_dir(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send()
 }
 
 function uploadFiles(path) {
+    const csrfToken = getCsrfToken();
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/uploadfile?path="+path
@@ -224,6 +238,7 @@ function uploadFiles(path) {
         }
     }
     xmlHttp.open("POST", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send(formData)
     alert("SALTO!!!");
 
@@ -270,3 +285,18 @@ function hash(string) {
       return hashHex;
     });
   }
+
+function getCsrfToken() {
+    var xmlHttp = new XMLHttpRequest();
+    let url = "http://ononoki.ddns.net:8080/getCsrfToken";
+
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
+            return (xmlHttp.responseText.csrfToken);
+        } else if (xmlHttp.readyState == 4){
+            return (NULL);
+        }
+    }
+    xmlHttp.open("GET", url, true)
+    xmlHttp.send()
+}
