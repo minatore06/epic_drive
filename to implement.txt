@@ -1,0 +1,29 @@
+-add salt to passwords before hashing them (bcrypt, scrypt)
+-ask for stronger passwords
+-sessions
+-injection prevention
+	validate data (check type, lenght, format, filter dangerous characters ['\'], escaping)(client and server side)
+-protection CSRF (ask for password on sensible actions, CSRF token)
+-protection CORS
+-HTTPS
+-Logging
+-auto-update
+-backup
+-error management (register error and don't show too much to users)
+-add google oauth
+
+Logging e Monitoraggio: Implementa un sistema di logging robusto per registrare le attività dell'applicazione e dei tentativi di accesso non autorizzati. Monitora costantemente l'attività dell'applicazione per rilevare comportamenti anomali.
+
+Aggiornamenti e Patch: Mantieni il tuo software e le librerie di terze parti aggiornate con gli ultimi aggiornamenti di sicurezza per evitare vulnerabilità note.
+
+Backup e Ripristino: Implementa procedure regolari di backup dei dati per proteggere da perdite di dati in caso di malfunzionamenti del sistema o attacchi.
+
+Gestione degli Errori: Mostra messaggi di errore generici agli utenti senza rivelare dettagli sensibili del sistema. Registra gli errori in modo appropriato per facilitare la diagnosi e la risoluzione dei problemi.
+
+Test di Sicurezza: Esegui regolarmente test di sicurezza come test di penetrazione e vulnerabilità per identificare potenziali punti deboli nel tuo sistema.
+
+Formazione degli Utenti: Educa gli utenti sulle migliori pratiche di sicurezza, come l'utilizzo di password forti, il riconoscimento delle minacce phishing e l'adozione di abitudini di navigazione sicura.
+
+https://www.backblaze.com/cloud-storage/pricing
+https://wasabi.com/cloud-storage-pricing/#three-info
+https://www.digitalocean.com/pricing/spaces-object-storage
