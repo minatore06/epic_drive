@@ -14,4 +14,12 @@ const connectDB = async() => {
     }
 }
 
-module.exports = connectDB;
+const closeDB = async() => {
+    try {
+        await client.close()
+    } catch (err) {
+        console.log('Errore nella chiusura del db:', err);
+    }
+}
+
+module.exports = { connectDB, closeDB };
