@@ -188,7 +188,10 @@ app.listen(80, ()=>{
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
     }),
-    app.get('/logout', checkCSRFToken, async(req, res) => {
+    app.get('/logout', checkCSRFToken, authenticateToken, async(req, res) => {
+        res.clearCookie('XSRF-TOKEN');
+        req.session.destroy();
+        res.redirect('/');
     })
     app.post('/authenticateToken', checkCSRFToken, async(req, res) => {
         let {token} = req.body;
@@ -204,7 +207,7 @@ app.listen(80, ()=>{
         
         res.json(token);
     }),
-    app.get('/getCsrfToken', (req, res) => {
+    app.get('/getCsrfToken', authenticateToken, (req, res) => {
         const csrfToken = req.csrfToken();
         res.json({ csrfToken });
     }),      
@@ -222,7 +225,7 @@ function generateAccessToken(user){
 //MIDDLEWARE
 
 function authenticateToken(req, res, next){
-    const token = req.headers['Authorization']
+    const token = req.headers['Authorization'].split(' ')[1]
     //const token = authHeader.split(' ')[1]
     if (!token) return res.sendStatus(401).json({message:'missing token'})
 

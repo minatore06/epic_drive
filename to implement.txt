@@ -24,6 +24,19 @@ Test di Sicurezza: Esegui regolarmente test di sicurezza come test di penetrazio
 
 Formazione degli Utenti: Educa gli utenti sulle migliori pratiche di sicurezza, come l'utilizzo di password forti, il riconoscimento delle minacce phishing e l'adozione di abitudini di navigazione sicura.
 
+
+-spazi condivisi con altri account
+-anteprime
+-ordinamento file
+-ricerca file
+-archiviazione intelligente (file meno utilizzati in archivi piú economici)
+
+
 https://www.backblaze.com/cloud-storage/pricing
 https://wasabi.com/cloud-storage-pricing/#three-info
 https://www.digitalocean.com/pricing/spaces-object-storage
+
+https://www.amazon.it/Seagate-Portable-1TB-USB-3-0/dp/B093WZHS1G/ref=sr_1_18?__mk_it_IT=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2W1JFY99TPM6H&keywords=hdd%2Besterno%2B8tb&qid=1691431122&sprefix=hdd%2Besterno%2B8tb%2Caps%2C500&sr=8-18&th=1
+https://www.amazon.it/UnionSine-Esterno-3-2Gen2-Storage-TV-HD3511/dp/B0C461RN5M/ref=sr_1_2_sspa?__mk_it_IT=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2BX1VYF1YF3VE&keywords=hdd+esterno+4tb&qid=1691440050&sprefix=hdd+esterno+4tb%2Caps%2C413&sr=8-2-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1
+
+https://www.amazon.it/Yottamaster-Esterno-USB3-0-modalit%C3%A0-Silenzioso/dp/B084YTCCXR/ref=sr_1_1_sspa?crid=1TEELXG4V9C2X&keywords=raid%2Bhard%2Bdisk&qid=1691440773&sprefix=raid%2Bha%2Caps%2C96&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1

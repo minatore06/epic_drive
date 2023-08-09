@@ -45,8 +45,20 @@ function toggleSignInUp(signin) {
 
 function logout() {
     const csrfToken = getCsrfToken();
-//    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken);
-    sessionStorage.setItem('token', "");
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/logout';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                sessionStorage.setItem('token', "");
+            }
+        }
+    }
+    xmlHttp.open('GET', url);
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken);
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
+    xmlHttp.send();
 }
 
 function login() {
@@ -158,6 +170,7 @@ function get_files(directory) {
         }
     }
     xmlHttp.open("GET", url, true)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
@@ -178,6 +191,7 @@ function create_folder(path) {
     }
     xmlHttp.open("POST", url, true)
     xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
@@ -197,6 +211,7 @@ function delete_file(path, file) {
     }
     xmlHttp.open("DELETE", url, true)
     xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
@@ -218,6 +233,7 @@ function delete_dir(path, file) {
     }
     xmlHttp.open("DELETE", url, true)
     xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
@@ -239,6 +255,7 @@ function uploadFiles(path) {
     }
     xmlHttp.open("POST", url, true)
     xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send(formData)
     alert("SALTO!!!");
 
@@ -257,6 +274,7 @@ function download_file(path){
     }
     xmlHttp.open("GET", url, true)
     xmlHttp.responseType = 'blob';
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
     alert("SALTO!!!");
 }
@@ -298,5 +316,6 @@ function getCsrfToken() {
         }
     }
     xmlHttp.open("GET", url, true)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
