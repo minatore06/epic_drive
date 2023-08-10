@@ -2,10 +2,23 @@ const { ObjectId } = require('mongodb');
 const { connectDB, closeDB } = require('../connection');
 
 class User {
-    constructor(email, password) {
+    constructor(email, password, ruolo) {
+        if (!email || !password)
+
         this._id = new ObjectId();
         this.email = email;
         this.password = password;
+        this.ruolo = ruolo?ruolo:"User";
+        this.lastSignIn = Date.now();
+        this.signupDate = Date.now();
+        this.totalSpace = 1;
+        this.paidSpace = 0;
+        //referal
+        this.status = "Active";//Active;Blocked;Deactiveted;Deleted
+        //autorizzazioni
+        //log utente
+        //log payments
+        //points
     }
 
     static async insertOne(user) {

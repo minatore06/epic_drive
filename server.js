@@ -226,7 +226,6 @@ function generateAccessToken(user){
 
 function authenticateToken(req, res, next){
     const token = req.headers['Authorization'].split(' ')[1]
-    //const token = authHeader.split(' ')[1]
     if (!token) return res.sendStatus(401).json({message:'missing token'})
 
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
@@ -252,6 +251,6 @@ function checkCSRFToken(req, res, next) {
 /*
 admin (authenticated, access to everything)
 member (authenticated, with personal space)
-user (authenticated, no personal space)
+user (authenticated, no paid space)
 guest (not autheticated)
 */
