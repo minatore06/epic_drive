@@ -1,17 +1,20 @@
 const express = require('express');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const helmet = require('helmet');
-const csrf = require('csurf');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
+const randomString = require('utils/random_string')
+
 dotenv.config();
-process.env.TOKEN_SECRET = require('crypto').randomBytes(64).toString('hex');
-process.env.SESSION_SECRET = require('crypto').randomBytes(64).toString('hex');
+process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
+process.env.SESSION_SECRET = require('crypto').randomBytes(128).toString('hex');
+process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
 
 const app = express();
 
@@ -46,7 +49,7 @@ app.use(helmet.hsts({
     preLoad: true
 }));
 app.use(helmet.frameguard({action: 'deny'}));
-app.use(csrf({cookie: true}));
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.options(corsOptions, cors())
 app.use(express.static(__dirname+'/public'));
@@ -67,7 +70,9 @@ app.listen(80, ()=>{
 
         if (!fullPath.includes(path.join(__dirname, 'storage')))
             return res.status(403).send();
-    
+
+        generateCTRFToken(req);
+
         fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
             if (error) {
                 console.log(error);
@@ -179,7 +184,7 @@ app.listen(80, ()=>{
         const token = generateAccessToken({"email":email, "ruolo":ruolo});
         res.json(token)
     })
-    app.post('/createAuthentication', checkCSRFToken, async(req, res) => {
+    app.post('/createAuthentication', async(req, res) => {
         let {email} = req.body;
         let ruolo;
 
@@ -188,8 +193,9 @@ app.listen(80, ()=>{
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
     }),
-    app.get('/logout', checkCSRFToken, authenticateToken, async(req, res) => {
-        res.clearCookie('XSRF-TOKEN');
+    app.get('/logout', authenticateToken, async(req, res) => {
+        res.clearCookie('_csrf_token');
+        res.clearCookie('_csrf_hashed');
         req.session.destroy();
         res.redirect('/');
     })
@@ -207,10 +213,10 @@ app.listen(80, ()=>{
         
         res.json(token);
     }),
-    app.get('/getCsrfToken', authenticateToken, (req, res) => {
+/*     app.get('/getCsrfToken', authenticateToken, (req, res) => {
         const csrfToken = req.csrfToken();
         res.json({ csrfToken });
-    }),      
+    }),     */
     app.get('*', (req, res) =>{
         res.status(404).sendFile("./404.html", {root: __dirname})
     })
@@ -220,7 +226,17 @@ function generateAccessToken(user){
     return jwt.sign({"email":user.email, "ruolo":user.ruolo}, process.env.TOKEN_SECRET, {expiresIn: '30m'});
 }
 
+function generateCTRFToken(req, res){
+    let options = {
+        //maxAge:
+        httpOnly: true,
+        signed: true
+    }
 
+    req.session.csrfToken = require('crypto').randomBytes(128).toString('hex');
+    res.cookie('_csrf_token', req.session.csrfToken, options);
+    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.sessionStore.csrfToken+process.env.CSFT_SECRET, 'binary').digest('base64'), options)
+}
 
 //MIDDLEWARE
 
@@ -244,7 +260,9 @@ function authenticateToken(req, res, next){
 }
 
 function checkCSRFToken(req, res, next) {
-    if (req.headers['X-Csrf-Token'] !== req.csrfToken())
+    if (!req.signedCookies['_csrf_hashed'])
+        return res.status(403).json({message: 'missing token CSRF'});
+    if (require('crypto').createHash('sha256').update(req.headers['X-Csrf-Token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
         return res.status(403).json({message: 'token CSRF invalid'});
     next();
 }

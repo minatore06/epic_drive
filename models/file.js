@@ -2,34 +2,31 @@ const { ObjectId } = require('mongodb');
 const { connectDB, closeDB } = require('../connection');
 const randomString = require('../utils/random_string')
 
-class User {
-    constructor(email, password, ruolo) {
-        if (!email || !password)
+//C - owner
+//R - see the content
+//U - update the file
+//D - delete the file
+
+class File {
+    conxstructor(name, path, folderID) {
+        if (!name || !path)
             return null
 
         this._id = new ObjectId();//PK
-        this.email = email;
-        this.password = password;
-        this.ruolo = ruolo?ruolo:"User";
-        this.lastSignIn = Date.now();
-        this.signupDate = Date.now();
-        this.totalSpace = 1;
-        this.paidSpace = 0;
+        this.parentFolder = folderID;//FK
+        this.name = name;
+        this.uploadDate = Date().now;
+        this.path = path;
         do {
-            this.referal = randomString(8, 'aA#');
-        } while (User.findOne({referal:this.referal}));
-        this.status = "Active";//Active;Blocked;Deactiveted;Deleted
-        //autorizzazioni
-        //log utente
-        //log payments
-        //points
+            this.share = randomString(16, 'aA#');
+        } while (File.findOne({share:this.share}));
     }
 
-    static async insertOne(user) {
+    static async insertOne(file) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.insertOne(user);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.insertOne(file);
             closeDB();
             return result;
         } catch (err) {
@@ -41,8 +38,8 @@ class User {
     static async findOne(query) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.findOne(query);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.findOne(query);
             closeDB();
             return result;
         } catch (err) {
@@ -53,8 +50,8 @@ class User {
     static async find(query) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.find(query);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.find(query);
             closeDB();
             return result;
         } catch (err) {
@@ -65,8 +62,8 @@ class User {
     static async countDocuments(query) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.countDocuments(query);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.countDocuments(query);
             closeDB();
             return result;
         } catch (err) {
@@ -77,8 +74,8 @@ class User {
     static async updateOne(query, update) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.updateOne(query, update);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.updateOne(query, update);
             closeDB();
             return result;
         } catch (err) {
@@ -89,8 +86,8 @@ class User {
     static async deleteOne(query) {
         try {
             const db = await connectDB();
-            const usersCollection = db.collection('users');
-            const result = usersCollection.deleteOne(query);
+            const filesCollection = db.collection('files');
+            const result = filesCollection.deleteOne(query);
             closeDB();
             return result;
         } catch (err) {
