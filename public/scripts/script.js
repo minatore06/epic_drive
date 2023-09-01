@@ -1,7 +1,6 @@
 var cur_path;
 
 function checkLogin() {
-    const csrfToken = getCsrfToken();
     let token = sessionStorage.getItem('token');
 
     if (location.hash == '#out') {
@@ -25,7 +24,6 @@ function checkLogin() {
         }
         xmlHttp.open('POST', url);
         xmlHttp.setRequestHeader("Content-Type", "application/json");
-        xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
         xmlHttp.send(JSON.stringify({"token":token}));
     }
 }
@@ -44,7 +42,6 @@ function toggleSignInUp(signin) {
 }
 
 function logout() {
-    const csrfToken = getCsrfToken();
     let xmlHttp = new XMLHttpRequest();
 
     const url = 'http://ononoki.ddns.net/logout';
@@ -56,13 +53,11 @@ function logout() {
         }
     }
     xmlHttp.open('GET', url);
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken);
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send();
 }
 
 function login() {
-    const csrfToken = getCsrfToken();
     let email = Document.getElementById('email').values;
     let password = Document.getElementById('password').value;
 
@@ -98,7 +93,6 @@ function login() {
     }
     xmlHttp.open('POST', url);
     xmlHttp.setRequestHeader("Content-Type", "application/json");
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send(JSON.stringify({"profilo":profileJson}));
 }
 
@@ -175,7 +169,7 @@ function get_files(directory) {
 }
 
 function create_folder(path) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
     let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
@@ -196,7 +190,7 @@ function create_folder(path) {
 }
 
 function delete_file(path, file) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -216,7 +210,7 @@ function delete_file(path, file) {
 }
 
 function delete_dir(path, file) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -238,7 +232,7 @@ function delete_dir(path, file) {
 }
 
 function uploadFiles(path) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = getCookieValue('_csrf_token');
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/uploadfile?path="+path
@@ -302,8 +296,8 @@ function hash(string) {
         .join('');
       return hashHex;
     });
-  }
-
+}
+/* 
 function getCsrfToken() {
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/getCsrfToken";
@@ -318,4 +312,8 @@ function getCsrfToken() {
     xmlHttp.open("GET", url, true)
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
-}
+} */
+
+const getCookieValue = (name) => (
+    return (document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '')
+)
