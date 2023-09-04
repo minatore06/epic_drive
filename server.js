@@ -18,7 +18,7 @@ app.use(express.static(__dirname+'/public'));
 app.use(express.json())
 app.use(fileUpload());
 
-app.listen(80, ()=>{
+app.listen(8080, ()=>{
     app.get('/', (req, res)=>{
         res.sendFile("./index.html", {root: __dirname})
     }),

@@ -2,7 +2,7 @@ var cur_path;
 
 function get_files(directory) {
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/getfiles?folder="+directory
+    let url = "http://ononoki.ddns.net:8080/getfiles?folder="+directory
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let files = JSON.parse(xmlHttp.responseText);
@@ -102,7 +102,7 @@ function uploadFiles(path) {
 
 function download_file(path){
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/sendfile?path="+path
+    let url = "http://ononoki.ddns.net:8080/sendfile?path="+path
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let file = xmlHttp.response;
