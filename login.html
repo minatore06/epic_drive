@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logins</title>
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./styles/style.css">
+    <script src="./scripts/script.js"></script>
+</head>
+<body onload="checkLogin()">
+    <div class="signin">
+        <h1>LOGIN</h1>
+        <p id="email-label"><b>e-mail</b></p>
+        <input type="email" name="email" id="email">
+        <p id="password-label"><b>password</b></p>
+        <input type="password" name="password" id="password">
+        <input type="button" value="Login" onclick="login()">
+    </div>
+    <div class="signup" style="display: none;">
+        <h1>SIGN-UP</h1>
+        <p id="email-label1"><b>e-mail</b></p>
+        <input type="email" name="email" id="email1">
+        <p id="password-label1"><b>password</b></p>
+        <input type="password" name="password" id="password1">
+        <p id="password-label2"><b>confirm password</b></p>
+        <input type="password" name="confirm-password" id="password2">
+        <input type="button" value="Sign-up" onclick="signup()">
+    </div>
+    <p id="change-login-display">signin | <a onclick="toggleSignInUp(1)">sign-up</a></p>
+</body>
+</html>

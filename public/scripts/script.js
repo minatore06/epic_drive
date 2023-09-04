@@ -1,5 +1,151 @@
 var cur_path;
 
+function checkLogin() {
+    let token = sessionStorage.getItem('token');
+
+    if (location.hash == '#out') {
+        location.hash = '';
+        return logout();
+    }
+
+    if (token)
+    {
+        let xmlHttp = new XMLHttpRequest();
+
+        const url = 'http://ononoki.ddns.net/authenticateToken';
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 200) {
+                    window.location.replace("http://ononoki.ddns.net/home")
+                }
+                else if (xmlHttp.status == 403 || xmlHttp.status == 401)
+                    logout();
+            }
+        }
+        xmlHttp.open('POST', url);
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.send(JSON.stringify({"token":token}));
+    }
+}
+
+function toggleSignInUp(signin) {
+    if (signin) {
+        Document.getElementByClass("signin").style.display = "none";
+        Document.getElementByClass("signup").style.display = "block";
+        Document.getElementById("change-login-display").innerHTML = '<a onclick="toggleSignInUp(0)">signin</a> | sign-up';
+    }
+    else {
+        Document.getElementByClass("signin").style.display = "block";
+        Document.getElementByClass("signup").style.display = "none";
+        Document.getElementById("change-login-display").innerHTML = 'signin | <a onclick="toggleSignInUp(1)">sign-up</a>';
+    }
+}
+
+function logout() {
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/logout';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                sessionStorage.setItem('token', "");
+            }
+        }
+    }
+    xmlHttp.open('GET', url);
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
+    xmlHttp.send();
+}
+
+function login() {
+    let email = Document.getElementById('email').values;
+    let password = Document.getElementById('password').value;
+
+    Document.getElementById("email-label").innerHTML = "<b>e-mail</b>";
+    Document.getElementById("password-label").innerHTML = "<b>password</b>";
+
+    if(!email)
+        return (Document.getElementById("email-label").innerHTML += "<br>Required field");
+    if(!password)
+        return (Document.getElementById("password-label").innerHTML += "<br>Required field");
+
+    password = hash(password);
+    let profileJson = {
+        "email": email,
+        "password":password,
+        "ruolo":""
+    }
+
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/createAuthentication';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                    const token = JSON.parse(xmlHttp.responseText);
+                    sessionStorage.setItem("token", token);
+                    window.location.replace("http://ononoki.ddns.net/home");
+            } else if (xmlHttp.status == 403 || xmlHttp.status == 400) {
+                Document.getElementById("email-label").innerHTML += "<br>Wrong email";
+                Document.getElementById("password-label").innerHTML += "<br>Wrong password";
+            } else if (xmlHttp.status == 403 || xmlHttp.status == 500) {
+                console.alert("Server error, retry later");
+            }
+        }
+    }
+    xmlHttp.open('POST', url);
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.send(JSON.stringify({"profilo":profileJson}));
+}
+
+function signup() {
+    let email = Document.getElementById('email1').values;
+    let password = Document.getElementById('password1').value;
+    let rpassword = Document.getElementById('password2').value;
+
+    Document.getElementById("email-label1").innerHTML = "<b>e-mail</b>";
+    Document.getElementById("password-label1").innerHTML = "<b>password</b>";
+    Document.getElementById("password-label2").innerHTML = "<b>confirm password</b>";
+
+    if(!email)
+        return (Document.getElementById("email-label1").innerHTML += "<br>Required field");
+    if(!password)
+        return (Document.getElementById("password-label1").innerHTML += "<br>Required field");
+    if(!rpassword)
+        return (Document.getElementById("password-label2").innerHTML += "<br>Required field");
+    if (password !== rpassword)
+        return (Document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
+
+    rpassword = null;
+    password = hash(password);
+    let profileJson = {
+        "email": email,
+        "password":password,
+        "ruolo":"user"
+    }
+
+    let xmlHttp = new XMLHttpRequest();
+
+    const url = 'http://ononoki.ddns.net/createUser';
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                    const token = JSON.parse(xmlHttp.responseText);
+                    sessionStorage.setItem("token", token);
+                    window.location.replace("http://ononoki.ddns.net/home");
+            } else if (xmlHttp.status == 403) {
+                Document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
+            } else if (xmlHttp.status == 500) {
+                console.alert("Server error, retry later");
+            }
+        }
+    }
+    xmlHttp.open('POST', url);
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.send(JSON.stringify({"profilo":profileJson}));
+}
+
 function get_files(directory) {
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/getfiles?folder="+directory
@@ -22,15 +168,17 @@ function get_files(directory) {
         }
     }
     xmlHttp.open("GET", url, true)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function create_folder(path) {
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
     let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
     xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Folder created successfully");
             get_files(path);
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
@@ -40,10 +188,13 @@ function create_folder(path) {
         }
     }
     xmlHttp.open("POST", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function delete_file(path, file) {
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -57,10 +208,13 @@ function delete_file(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function delete_dir(path, file) {
+    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -76,10 +230,13 @@ function delete_dir(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function uploadFiles(path) {
+    const csrfToken = getCookieValue('_csrf_token');
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
     let url = "http://ononoki.ddns.net:8080/uploadfile?path="+path
@@ -88,13 +245,15 @@ function uploadFiles(path) {
         formData.append('file', file)
     })
     xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Upload succeded")
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
             alert("Access denied");
         }
     }
     xmlHttp.open("POST", url, true)
+    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send(formData)
     alert("SALTO!!!");
 
@@ -113,6 +272,7 @@ function download_file(path){
     }
     xmlHttp.open("GET", url, true)
     xmlHttp.responseType = 'blob';
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
     alert("SALTO!!!");
 }
@@ -131,3 +291,33 @@ function _html5Saver(blob , fileName) {
     document.body.removeChild(a);
 }
 
+function hash(string) {
+    const utf8 = new TextEncoder().encode(string);
+    return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((bytes) => bytes.toString(16).padStart(2, '0'))
+        .join('');
+      return hashHex;
+    });
+}
+/* 
+function getCsrfToken() {
+    var xmlHttp = new XMLHttpRequest();
+    let url = "http://ononoki.ddns.net:8080/getCsrfToken";
+
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
+            return (xmlHttp.responseText.csrfToken);
+        } else if (xmlHttp.readyState == 4){
+            return (NULL);
+        }
+    }
+    xmlHttp.open("GET", url, true)
+    xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
+    xmlHttp.send()
+} */
+
+const getCookieValue = (name) => (
+    return (document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '')
+)
