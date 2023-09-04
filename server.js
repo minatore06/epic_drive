@@ -9,7 +9,8 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
-const randomString = require('utils/random_string')
+const randomString = require('utils/random_string');
+const { User, File, Folder, Authorization } = require('./models');
 
 dotenv.config();
 process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
@@ -179,17 +180,45 @@ app.listen(80, ()=>{
     app.post('/createUser', async(req, res) => {
         let {email, password, ruolo} = req.body;
 
-        //search if present in db (400)
+        //search if present in db (403)
+        try {
+            if (User.findOne({email:email}))
+                return (res.status(403).send("email already present"));
+            if (!email || !password || !ruolo)
+                return (res.status(400).send("missing data"));
+        } catch (error) {
+            return (res.status(500).send("generic internal error"));
+        }
         //add to db
-        const token = generateAccessToken({"email":email, "ruolo":ruolo});
-        res.json(token)
+        User.insertOne(new User(email, password, ruolo))
+            .then(() => {
+                //create work area
+                const token = generateAccessToken({"email":email, "ruolo":ruolo});
+                res.json(token)
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send("generic internal error");
+            });
     })
     app.post('/createAuthentication', async(req, res) => {
-        let {email} = req.body;
+        let {email, password} = req.body;
         let ruolo;
+        let user;
 
         //search if present in db
+        try {
+            if (!email || !password)
+                return (res.status(403).send("missing data"));
+            user = User.findOne({email:email});
+            if (!user)
+                return (res.status(400).send("email not found"));
+        } catch (error) {
+            return (res.status(500).send("generic internal error"));
+        }
         //403 wrong password/email not present
+        if (user.password != password)
+            return (res.status(403).send("wrong password"));
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
     }),

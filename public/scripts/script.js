@@ -85,9 +85,11 @@ function login() {
                     const token = JSON.parse(xmlHttp.responseText);
                     sessionStorage.setItem("token", token);
                     window.location.replace("http://ononoki.ddns.net/home");
-            } else if (xmlHttp.status == 403) {
+            } else if (xmlHttp.status == 403 || xmlHttp.status == 400) {
                 Document.getElementById("email-label").innerHTML += "<br>Wrong email";
                 Document.getElementById("password-label").innerHTML += "<br>Wrong password";
+            } else if (xmlHttp.status == 403 || xmlHttp.status == 500) {
+                console.alert("Server error, retry later");
             }
         }
     }
@@ -133,6 +135,8 @@ function signup() {
                     window.location.replace("http://ononoki.ddns.net/home");
             } else if (xmlHttp.status == 403) {
                 Document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
+            } else if (xmlHttp.status == 500) {
+                console.alert("Server error, retry later");
             }
         }
     }
