@@ -12,11 +12,11 @@ function checkLogin() {
     {
         let xmlHttp = new XMLHttpRequest();
 
-        const url = 'http://ononoki.ddns.net/authenticateToken';
+        const url = 'https://ononoki.ddns.net/authenticateToken';
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4) {
                 if (xmlHttp.status == 200) {
-                    window.location.replace("http://ononoki.ddns.net/home")
+                    window.location.replace("https://ononoki.ddns.net/home")
                 }
                 else if (xmlHttp.status == 403 || xmlHttp.status == 401)
                     logout();
@@ -44,7 +44,7 @@ function toggleSignInUp(signin) {
 function logout() {
     let xmlHttp = new XMLHttpRequest();
 
-    const url = 'http://ononoki.ddns.net/logout';
+    const url = 'https://ononoki.ddns.net/logout';
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
@@ -78,13 +78,13 @@ async function login() {
 
     let xmlHttp = new XMLHttpRequest();
 
-    const url = 'http://ononoki.ddns.net/createAuthentication';
+    const url = 'https://ononoki.ddns.net/createAuthentication';
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
                     const token = JSON.parse(xmlHttp.responseText);
                     sessionStorage.setItem("token", token);
-                    window.location.replace("http://ononoki.ddns.net/home");
+                    window.location.replace("https://ononoki.ddns.net/home");
             } else if (xmlHttp.status == 403 || xmlHttp.status == 400) {
                 document.getElementById("email-label").innerHTML += "<br>Wrong email";
                 document.getElementById("password-label").innerHTML += "<br>Wrong password";
@@ -126,13 +126,13 @@ async function signup() {
 
     let xmlHttp = new XMLHttpRequest();
 
-    const url = 'http://ononoki.ddns.net/createUser';
+    const url = 'https://ononoki.ddns.net/createUser';
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
                     const token = JSON.parse(xmlHttp.responseText);
                     sessionStorage.setItem("token", token);
-                    window.location.replace("http://ononoki.ddns.net/home");
+                    window.location.replace("https://ononoki.ddns.net/home");
             } else if (xmlHttp.status == 403) {
                 document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
             } else if (xmlHttp.status == 500) {
@@ -147,7 +147,7 @@ async function signup() {
 
 function get_files(directory) {
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/getfiles?folder="+directory
+    let url = "https://ononoki.ddns.net/getfiles?folder="+directory
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let files = JSON.parse(xmlHttp.responseText);
@@ -175,7 +175,7 @@ function create_folder(path) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
-    let url = "http://ononoki.ddns.net/createdirectory?path="+path+"&name="+dir_name
+    let url = "https://ononoki.ddns.net/createdirectory?path="+path+"&name="+dir_name
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Folder created successfully");
@@ -195,7 +195,7 @@ function create_folder(path) {
 function delete_file(path, file) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/deleteFile?path="+path+"/"+file
+    let url = "https://ononoki.ddns.net/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             alert("File deleted successfully");
@@ -215,7 +215,7 @@ function delete_file(path, file) {
 function delete_dir(path, file) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/deleteDir?path="+path+"/"+file
+    let url = "https://ononoki.ddns.net/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             alert("Folder deleted successfully");
@@ -238,7 +238,7 @@ function uploadFiles(path) {
     const csrfToken = getCookieValue('_csrf_token');
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/uploadfile?path="+path
+    let url = "https://ononoki.ddns.net/uploadfile?path="+path
     var formData = new FormData();
     Array.from(files).forEach(file => {
         formData.append('file', file)
@@ -260,7 +260,7 @@ function uploadFiles(path) {
 
 function download_file(path){
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/sendfile?path="+path
+    let url = "https://ononoki.ddns.net/sendfile?path="+path
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let file = xmlHttp.response;
@@ -302,7 +302,7 @@ function _html5Saver(blob , fileName) {
 /* 
 function getCsrfToken() {
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net/getCsrfToken";
+    let url = "https://ononoki.ddns.net/getCsrfToken";
 
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 201){

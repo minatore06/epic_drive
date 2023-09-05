@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+const https = require("https");
+const bodyParser = require("body-parser");
 const cors = require('cors');
 const helmet = require('helmet');
 const fs = require('fs');
@@ -21,10 +23,15 @@ process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.SESSION_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
 
+const httpsOptions = {
+    key: fs.readFileSync("server.key"),
+    cert: fs.readFileSync("server.cert")
+};
+
 const app = express();
 
 const corsOptions = {
-    origin: 'http://ononoki.ddns.net',
+    origin: 'https://ononoki.ddns.net',
     methods: 'GET,POST,DELETE',
     allowedHeaders: 'Authorization,X-Csrf-Token,Content-Type',
     exposedHeader: 'Authorization,X-Csrf-Token',
@@ -34,20 +41,22 @@ const corsOptions = {
 
 console.log("epico")
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized: true,
-    cookie: {secure: false, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
+    cookie: {secure: true, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
 }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
-        defaultSrc: ["'self'",'http://ononoki.ddns.net'],
-        scriptSrc: ["'self'", "'unsafe-inline'",'http://ononoki.ddns.net'],
-        scriptSrcAttr: ["'self'","'unsafe-inline'",'http://ononoki.ddns.net'],
-        styleSrc: ["'self'","'unsafe-inline'",'http://ononoki.ddns.net'],
-        imgSrc: ["'self'",'http://ononoki.ddns.net'],
-        connectSrc: ["'self'",'http://ononoki.ddns.net'],
+        defaultSrc: ["'self'",'ononoki.ddns.net'],
+        scriptSrc: ["'self'", "'unsafe-inline'",'ononoki.ddns.net'],
+        scriptSrcAttr: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
+        styleSrc: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
+        imgSrc: ["'self'",'ononoki.ddns.net'],
+        connectSrc: ["'self'",'ononoki.ddns.net'],
     }
 }));
 app.use(helmet.noSniff());
@@ -65,208 +74,206 @@ app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.json());
 app.use(fileUpload());
 
-app.listen(80, ()=>{
-    app.get('/', (req, res)=>{
-        res.sendFile("./login.html", {root: __dirname})
-    }),
-    app.get('/home', (req, res)=>{
-        res.sendFile("./index.html", {root: __dirname})
-    }),
-    app.get('/getfiles', authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.folder);
-        let result = new Array();
-        console.log(fullPath);
+app.get('/', (req, res)=>{
+    res.sendFile("./login.html", {root: __dirname})
+});
+app.get('/home', (req, res)=>{
+    res.sendFile("./index.html", {root: __dirname})
+});
+app.get('/getfiles', authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.folder);
+    let result = new Array();
+    console.log(fullPath);
 
-        if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
+    if (!fullPath.includes(path.join(__dirname, 'storage')))
+        return res.status(403).send();
 
-        generateCTRFToken(req);
+    generateCTRFToken(req);
 
-        fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
-            if (error) {
-                console.log(error);
-                return res.status(400).send(error.code);
-            }
-            files.forEach( file => {
-                result.push({"name":file.name, "isDirectory":file.isDirectory()})
-            });
-            console.log(result);
-            res.send(JSON.stringify(result));
-        })
-    }),
-    app.get('/sendfile', authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.path);
-        console.log(fullPath);
-
-        if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
-
-        res.download(fullPath, (error) => {
-            if (error){
-                console.log(error);
-                try {
-                    res.status(400).send(error.code);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-        })
-    }),
-    app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.path, req.query.name);
-        console.log(fullPath);
-
-        if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
-
-        fs.mkdir(fullPath, {recursive: true}, (err) => {
-            if (err)
-                return res.status(400).send();
-            res.status(201).send();
+    fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
+        if (error) {
+            console.log(error);
+            return res.status(400).send(error.code);
+        }
+        files.forEach( file => {
+            result.push({"name":file.name, "isDirectory":file.isDirectory()})
         });
-    }),
-    app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.path);
-        let files = req.files.file;
-        console.log(fullPath);
-        console.log(files);
+        console.log(result);
+        res.send(JSON.stringify(result));
+    })
+});
+app.get('/sendfile', authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.path);
+    console.log(fullPath);
+
+    if (!fullPath.includes(path.join(__dirname, 'storage')))
+        return res.status(403).send();
+
+    res.download(fullPath, (error) => {
+        if (error){
+            console.log(error);
+            try {
+                res.status(400).send(error.code);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    })
+});
+app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.path, req.query.name);
+    console.log(fullPath);
+
+    if (!fullPath.includes(path.join(__dirname, 'storage')))
+        return res.status(403).send();
+
+    fs.mkdir(fullPath, {recursive: true}, (err) => {
+        if (err)
+            return res.status(400).send();
+        res.status(201).send();
+    });
+});
+app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.path);
+    let files = req.files.file;
+    console.log(fullPath);
+    console.log(files);
 
 //413 payload too large
 
-        if (Array.isArray(files)){
-            Object.keys(files).forEach(key => {
-                let file = files[key]
-                file.mv(fullPath + `/${file.name}`, (err) => {
-                    if (err){
-                        console.log(err);
-                        return res.status(400).send();
-                    }
-                })
-            })
-        } else {
-            files.mv(fullPath + `/${files.name}`, (err) => {
+    if (Array.isArray(files)){
+        Object.keys(files).forEach(key => {
+            let file = files[key]
+            file.mv(fullPath + `/${file.name}`, (err) => {
                 if (err){
                     console.log(err);
                     return res.status(400).send();
                 }
             })
-        }
-        res.status(201).send();
-    }),
-    app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.path);
-        console.log(fullPath);
-
-        if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
-
-        fs.unlink(fullPath, (err) => {
+        })
+    } else {
+        files.mv(fullPath + `/${files.name}`, (err) => {
             if (err){
                 console.log(err);
                 return res.status(400).send();
             }
-            res.status(200).send();
         })
-    }),
-    app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
-        let fullPath = path.join(__dirname, 'storage', req.query.path);
-        console.log(fullPath);
+    }
+    res.status(201).send();
+});
+app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.path);
+    console.log(fullPath);
 
-        if (!fullPath.includes(path.join(__dirname, 'storage')))
-            return res.status(403).send();
-        
-        fs.rmdir(fullPath, (err) => {
-            if (err){
-                if (err.code == "ENOTEMPTY")
-                    return res.status(409).send();
+    if (!fullPath.includes(path.join(__dirname, 'storage')))
+        return res.status(403).send();
+
+    fs.unlink(fullPath, (err) => {
+        if (err){
+            console.log(err);
+            return res.status(400).send();
+        }
+        res.status(200).send();
+    })
+});
+app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
+    let fullPath = path.join(__dirname, 'storage', req.query.path);
+    console.log(fullPath);
+
+    if (!fullPath.includes(path.join(__dirname, 'storage')))
+        return res.status(403).send();
+    
+    fs.rmdir(fullPath, (err) => {
+        if (err){
+            if (err.code == "ENOTEMPTY")
+                return res.status(409).send();
+            console.log(err);
+            return res.status(400).send();
+        }
+        res.status(200).send();
+    })
+});
+app.post('/createUser', async(req, res) => {
+    let {email, password, ruolo} = req.body;
+
+    //search if present in db (403)
+    try {
+        if (await User.findOne({email:email}))
+            return (res.status(403).send("email already present"));
+        if (!email || !password || !ruolo)
+            return (res.status(400).send("missing data"));
+    } catch (err) {
+        return (res.status(500).send("generic internal error"));
+    }
+    bcrypt.hash(password, 10, (err, hash) => {
+        if (err)
+            return (res.status(500).send("generic internal error"));
+        password = hash;
+        //add to db
+        User.insertOne(new User(email, password, ruolo))
+            .then(() => {
+                //create work area
+                const token = generateAccessToken({"email":email, "ruolo":ruolo});
+                res.json(token)
+            })
+            .catch((err) => {
                 console.log(err);
-                return res.status(400).send();
-            }
-            res.status(200).send();
-        })
-    }),
-    app.post('/createUser', async(req, res) => {
-        let {email, password, ruolo} = req.body;
+                res.status(500).send("generic internal error");
+            });
+    });
+});
+app.post('/createAuthentication', async(req, res) => {
+    let {email, password} = req.body;
+    let ruolo;
+    let user;
 
-        //search if present in db (403)
-        try {
-            if (await User.findOne({email:email}))
-                return (res.status(403).send("email already present"));
-            if (!email || !password || !ruolo)
-                return (res.status(400).send("missing data"));
-        } catch (err) {
+    //search if present in db
+    try {
+        if (!email || !password)
+            return (res.status(403).send("missing data"));
+        user = await User.findOne({email:email});
+        if (!user)
+            return (res.status(400).send("email not found"));
+    } catch (err) {
+        return (res.status(500).send("generic internal error"));
+    }
+    //403 wrong password/email not present
+    bcrypt.compare(password, user.password, (err, result) => {
+        if (err)
             return (res.status(500).send("generic internal error"));
-        }
-        bcrypt.hash(password, 10, (err, hash) => {
-            if (err)
-                return (res.status(500).send("generic internal error"));
-            password = hash;
-            //add to db
-            User.insertOne(new User(email, password, ruolo))
-                .then(() => {
-                    //create work area
-                    const token = generateAccessToken({"email":email, "ruolo":ruolo});
-                    res.json(token)
-                })
-                .catch((err) => {
-                    console.log(err);
-                    res.status(500).send("generic internal error");
-                });
-        });
-    })
-    app.post('/createAuthentication', async(req, res) => {
-        let {email, password} = req.body;
-        let ruolo;
-        let user;
-
-        //search if present in db
-        try {
-            if (!email || !password)
-                return (res.status(403).send("missing data"));
-            user = await User.findOne({email:email});
-            if (!user)
-                return (res.status(400).send("email not found"));
-        } catch (err) {
-            return (res.status(500).send("generic internal error"));
-        }
-        //403 wrong password/email not present
-        bcrypt.compare(password, user.password, (err, result) => {
-            if (err)
-                return (res.status(500).send("generic internal error"));
-            if (!result)
-                return (res.status(403).send("wrong password"));
-            const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
-            res.json(token);
-        });
-    }),
-    app.get('/logout', authenticateToken, async(req, res) => {
-        res.clearCookie('_csrf_token');
-        res.clearCookie('_csrf_hashed');
-        req.session.destroy();
-        res.redirect('/');
-    })
-    app.post('/authenticateToken', checkCSRFToken, async(req, res) => {
-        let {token} = req.body;
-
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
-            if(err){
-                console.log(err)
-                if(err.name == "TokenExpiredError")return res.sendStatus(403).location("http://ononoki.ddns.net/#out")
-                return res.sendStatus(401)
-            }
-            res.sendStatus(200);
-        })
-        
+        if (!result)
+            return (res.status(403).send("wrong password"));
+        const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
-    }),
-/*     app.get('/getCsrfToken', authenticateToken, (req, res) => {
-        const csrfToken = req.csrfToken();
-        res.json({ csrfToken });
-    }),     */
-    app.get('*', (req, res) =>{
-        res.status(404).sendFile("./404.html", {root: __dirname})
+    });
+});
+app.get('/logout', authenticateToken, async(req, res) => {
+    res.clearCookie('_csrf_token');
+    res.clearCookie('_csrf_hashed');
+    req.session.destroy();
+    res.redirect('/');
+});
+app.post('/authenticateToken', checkCSRFToken, async(req, res) => {
+    let {token} = req.body;
+
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
+        if(err){
+            console.log(err)
+            if(err.name == "TokenExpiredError")return res.sendStatus(403).location("https://ononoki.ddns.net/#out")
+            return res.sendStatus(401)
+        }
+        res.sendStatus(200);
     })
-})
+    
+    res.json(token);
+});
+/*     app.get('/getCsrfToken', authenticateToken, (req, res) => {
+    const csrfToken = req.csrfToken();
+    res.json({ csrfToken });
+}),     */
+app.get('*', (req, res) =>{
+    res.status(404).sendFile("./404.html", {root: __dirname})
+});
 
 function generateAccessToken(user){
     return jwt.sign({"email":user.email, "ruolo":user.ruolo}, process.env.TOKEN_SECRET, {expiresIn: '30m'});
@@ -312,6 +319,10 @@ function checkCSRFToken(req, res, next) {
         return res.status(403).json({message: 'token CSRF invalid'});
     next();
 }
+
+https.createServer(httpsOptions, app).listen(443, (req, res) => {
+    console.log("Server listening port 443");
+});
 /*
 admin (authenticated, access to everything)
 member (authenticated, with personal space)
