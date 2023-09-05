@@ -261,7 +261,7 @@ app.get('/logout', authenticateToken, async(req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
-app.post('/authenticateToken', checkCSRFToken, async(req, res) => {
+app.post('/authenticateToken', async(req, res) => {
     let {token} = req.body;
 
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
