@@ -142,7 +142,6 @@ async function signup() {
     }
     xmlHttp.open('POST', url);
     xmlHttp.setRequestHeader("Content-Type", "application/json");
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.send(JSON.stringify({"profilo":profileJson}));
 }
 
