@@ -30,14 +30,14 @@ function checkLogin() {
 
 function toggleSignInUp(signin) {
     if (signin) {
-        Document.getElementsByClassName("signin")[0].style.display = "none";
-        Document.getElementsByClassName("signup")[0].style.display = "block";
-        Document.getElementById("change-login-display").innerHTML = '<a onclick="toggleSignInUp(0)">signin</a> | sign-up';
+        document.getElementsByClassName("signin")[0].style.display = "none";
+        document.getElementsByClassName("signup")[0].style.display = "block";
+        document.getElementById("change-login-display").innerHTML = '<a onclick="toggleSignInUp(0)">signin</a> | sign-up';
     }
     else {
-        Document.getElementsByClassName("signin")[0].style.display = "block";
-        Document.getElementsByClassName("signup")[0].style.display = "none";
-        Document.getElementById("change-login-display").innerHTML = 'signin | <a onclick="toggleSignInUp(1)">sign-up</a>';
+        document.getElementsByClassName("signin")[0].style.display = "block";
+        document.getElementsByClassName("signup")[0].style.display = "none";
+        document.getElementById("change-login-display").innerHTML = 'signin | <a onclick="toggleSignInUp(1)">sign-up</a>';
     }
 }
 
@@ -58,16 +58,16 @@ function logout() {
 }
 
 function login() {
-    let email = Document.getElementById('email').values;
-    let password = Document.getElementById('password').value;
+    let email = document.getElementById('email').values;
+    let password = document.getElementById('password').value;
 
-    Document.getElementById("email-label").innerHTML = "<b>e-mail</b>";
-    Document.getElementById("password-label").innerHTML = "<b>password</b>";
+    document.getElementById("email-label").innerHTML = "<b>e-mail</b>";
+    document.getElementById("password-label").innerHTML = "<b>password</b>";
 
     if(!email)
-        return (Document.getElementById("email-label").innerHTML += "<br>Required field");
+        return (document.getElementById("email-label").innerHTML += "<br>Required field");
     if(!password)
-        return (Document.getElementById("password-label").innerHTML += "<br>Required field");
+        return (document.getElementById("password-label").innerHTML += "<br>Required field");
 
     password = hash(password);
     let profileJson = {
@@ -86,8 +86,8 @@ function login() {
                     sessionStorage.setItem("token", token);
                     window.location.replace("http://ononoki.ddns.net/home");
             } else if (xmlHttp.status == 403 || xmlHttp.status == 400) {
-                Document.getElementById("email-label").innerHTML += "<br>Wrong email";
-                Document.getElementById("password-label").innerHTML += "<br>Wrong password";
+                document.getElementById("email-label").innerHTML += "<br>Wrong email";
+                document.getElementById("password-label").innerHTML += "<br>Wrong password";
             } else if (xmlHttp.status == 403 || xmlHttp.status == 500) {
                 console.alert("Server error, retry later");
             }
@@ -99,22 +99,22 @@ function login() {
 }
 
 function signup() {
-    let email = Document.getElementById('email1').values;
-    let password = Document.getElementById('password1').value;
-    let rpassword = Document.getElementById('password2').value;
+    let email = document.getElementById('email1').values;
+    let password = document.getElementById('password1').value;
+    let rpassword = document.getElementById('password2').value;
 
-    Document.getElementById("email-label1").innerHTML = "<b>e-mail</b>";
-    Document.getElementById("password-label1").innerHTML = "<b>password</b>";
-    Document.getElementById("password-label2").innerHTML = "<b>confirm password</b>";
+    document.getElementById("email-label1").innerHTML = "<b>e-mail</b>";
+    document.getElementById("password-label1").innerHTML = "<b>password</b>";
+    document.getElementById("password-label2").innerHTML = "<b>confirm password</b>";
 
     if(!email)
-        return (Document.getElementById("email-label1").innerHTML += "<br>Required field");
+        return (document.getElementById("email-label1").innerHTML += "<br>Required field");
     if(!password)
-        return (Document.getElementById("password-label1").innerHTML += "<br>Required field");
+        return (document.getElementById("password-label1").innerHTML += "<br>Required field");
     if(!rpassword)
-        return (Document.getElementById("password-label2").innerHTML += "<br>Required field");
+        return (document.getElementById("password-label2").innerHTML += "<br>Required field");
     if (password !== rpassword)
-        return (Document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
+        return (document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
 
     rpassword = null;
     password = hash(password);
@@ -134,7 +134,7 @@ function signup() {
                     sessionStorage.setItem("token", token);
                     window.location.replace("http://ononoki.ddns.net/home");
             } else if (xmlHttp.status == 403) {
-                Document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
+                document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
             } else if (xmlHttp.status == 500) {
                 console.alert("Server error, retry later");
             }
