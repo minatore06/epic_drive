@@ -42,12 +42,12 @@ app.use(session({
 }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
-        defaultSrc: ["'self'",'ononoki.ddns.net'],
-        scriptSrc: ["'self'", "'unsafe-inline'",'ononoki.ddns.net'],
-        scriptSrcAttr: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
-        styleSrc: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
-        imgSrc: ["'self'",'ononoki.ddns.net'],
-        connectSrc: ["'self'",'ononoki.ddns.net'],
+        defaultSrc: ["'self'",'http://ononoki.ddns.net'],
+        scriptSrc: ["'self'", "'unsafe-inline'",'http://ononoki.ddns.net'],
+        scriptSrcAttr: ["'self'","'unsafe-inline'",'http://ononoki.ddns.net'],
+        styleSrc: ["'self'","'unsafe-inline'",'http://ononoki.ddns.net'],
+        imgSrc: ["'self'",'http://ononoki.ddns.net'],
+        connectSrc: ["'self'",'http://ononoki.ddns.net'],
     }
 }));
 app.use(helmet.noSniff());
