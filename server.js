@@ -212,9 +212,11 @@ app.post('/createUser', async(req, res) => {
         //add to db
         User.insertOne(new User(email, password, ruolo, async() => {
             let referal;
+            console.log("getting referal\n")
             do {
                 referal = randomString(8, 'aA#');
             } while (await User.findOne({referal:referal}));
+            console.log("got referal\n")
             return referal;
         }))
             .then(() => {
