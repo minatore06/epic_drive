@@ -59,7 +59,7 @@ app.use(helmet.frameguard({action: 'deny'}));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.options(corsOptions, cors());
-app.use(express.static(__dirname+'/public'));
+app.use(express.static(path.join(__dirname,'/public')));
 app.use(express.json());
 app.use(fileUpload());
 
