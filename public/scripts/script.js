@@ -89,7 +89,7 @@ async function login() {
                 document.getElementById("email-label").innerHTML += "<br>Wrong email";
                 document.getElementById("password-label").innerHTML += "<br>Wrong password";
             } else if (xmlHttp.status == 403 || xmlHttp.status == 500) {
-                console.alert("Server error, retry later");
+                alert("Server error, retry later");
             }
         }
     }
@@ -136,7 +136,7 @@ async function signup() {
             } else if (xmlHttp.status == 403) {
                 document.getElementById("email-label1").innerHTML += "<br>E-mail already registered";
             } else if (xmlHttp.status == 500) {
-                console.alert("Server error, retry later");
+                alert("Server error, retry later");
             }
         }
     }

@@ -190,7 +190,7 @@ app.listen(80, ()=>{
                 return (res.status(403).send("email already present"));
             if (!email || !password || !ruolo)
                 return (res.status(400).send("missing data"));
-        } catch (error) {
+        } catch (err) {
             return (res.status(500).send("generic internal error"));
         }
         bcrypt.hash(password, 10, (err, hash) => {
@@ -222,7 +222,7 @@ app.listen(80, ()=>{
             user = await User.findOne({email:email});
             if (!user)
                 return (res.status(400).send("email not found"));
-        } catch (error) {
+        } catch (err) {
             return (res.status(500).send("generic internal error"));
         }
         //403 wrong password/email not present
