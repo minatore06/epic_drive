@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { connectDB, closeDB } = require('../connection');
-const { randomString } = require('../utils/random_string')
+const s = require('../utils/random_string')
 
 class User {
     constructor(email, password, ruolo) {
@@ -16,7 +16,7 @@ class User {
         this.totalSpace = 1;
         this.paidSpace = 0;
         do {
-            this.referal = randomString(8, 'aA#');
+            this.referal = s.randomString(8, 'aA#');
         } while (User.findOne({referal:this.referal}));
         this.status = "Active";//Active;Blocked;Deactiveted;Deleted
         //autorizzazioni
