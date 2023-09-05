@@ -45,7 +45,8 @@ app.use(helmet.contentSecurityPolicy({
         defaultSrc: ["'self'",'ononoki.ddns.net'],
         scriptSrc: ["'self'", "'unsafe-inline'",'ononoki.ddns.net'],
         styleSrc: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
-        imgSrc: ["'self'",'ononoki.ddns.net']
+        imgSrc: ["'self'",'ononoki.ddns.net'],
+        connectSrc: ["'self'",'ononoki.ddns.net'],
     }
 }));
 app.use(helmet.noSniff());
