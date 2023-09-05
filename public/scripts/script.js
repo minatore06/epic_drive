@@ -30,13 +30,13 @@ function checkLogin() {
 
 function toggleSignInUp(signin) {
     if (signin) {
-        Document.getElementByClass("signin").style.display = "none";
-        Document.getElementByClass("signup").style.display = "block";
+        Document.getElementByClassName("signin")[0].style.display = "none";
+        Document.getElementByClassName("signup")[0].style.display = "block";
         Document.getElementById("change-login-display").innerHTML = '<a onclick="toggleSignInUp(0)">signin</a> | sign-up';
     }
     else {
-        Document.getElementByClass("signin").style.display = "block";
-        Document.getElementByClass("signup").style.display = "none";
+        Document.getElementByClassName("signin")[0].style.display = "block";
+        Document.getElementByClassName("signup")[0].style.display = "none";
         Document.getElementById("change-login-display").innerHTML = 'signin | <a onclick="toggleSignInUp(1)">sign-up</a>';
     }
 }
