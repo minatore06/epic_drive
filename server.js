@@ -186,7 +186,7 @@ app.listen(80, ()=>{
 
         //search if present in db (403)
         try {
-            if (User.findOne({email:email}))
+            if (await User.findOne({email:email}))
                 return (res.status(403).send("email already present"));
             if (!email || !password || !ruolo)
                 return (res.status(400).send("missing data"));
@@ -219,7 +219,7 @@ app.listen(80, ()=>{
         try {
             if (!email || !password)
                 return (res.status(403).send("missing data"));
-            user = User.findOne({email:email});
+            user = await User.findOne({email:email});
             if (!user)
                 return (res.status(400).send("email not found"));
         } catch (error) {
