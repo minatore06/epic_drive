@@ -27,8 +27,8 @@ class User {
         try {
             const db = await connectDB();
             const usersCollection = db.collection('users');
-            const result = usersCollection.insertOne(user);
-            closeDB();
+            const result = await usersCollection.insertOne(user);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -41,7 +41,7 @@ class User {
             const db = await connectDB();
             const usersCollection = db.collection('users');
             const result = await usersCollection.findOne(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -53,7 +53,7 @@ class User {
             const db = await connectDB();
             const usersCollection = db.collection('users');
             const result = usersCollection.find(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -64,8 +64,8 @@ class User {
         try {
             const db = await connectDB();
             const usersCollection = db.collection('users');
-            const result = usersCollection.countDocuments(query);
-            closeDB();
+            const result = await usersCollection.countDocuments(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -76,8 +76,8 @@ class User {
         try {
             const db = await connectDB();
             const usersCollection = db.collection('users');
-            const result = usersCollection.updateOne(query, update);
-            closeDB();
+            const result = await usersCollection.updateOne(query, update);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -88,8 +88,8 @@ class User {
         try {
             const db = await connectDB();
             const usersCollection = db.collection('users');
-            const result = usersCollection.deleteOne(query);
-            closeDB();
+            const result = await usersCollection.deleteOne(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);

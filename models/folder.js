@@ -26,8 +26,8 @@ class Folder {
         try {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
-            const result = foldersCollection.insertOne(folder);
-            closeDB();
+            const result = await foldersCollection.insertOne(folder);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -40,7 +40,7 @@ class Folder {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
             const result = await foldersCollection.findOne(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -52,7 +52,7 @@ class Folder {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
             const result = foldersCollection.find(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -63,8 +63,8 @@ class Folder {
         try {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
-            const result = foldersCollection.countDocuments(query);
-            closeDB();
+            const result = await foldersCollection.countDocuments(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -75,8 +75,8 @@ class Folder {
         try {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
-            const result = foldersCollection.updateOne(query, update);
-            closeDB();
+            const result = await foldersCollection.updateOne(query, update);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -87,8 +87,8 @@ class Folder {
         try {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
-            const result = foldersCollection.deleteOne(query);
-            closeDB();
+            const result = await foldersCollection.deleteOne(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);

@@ -23,8 +23,8 @@ class Authorization {
         try {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
-            const result = authorizationsCollection.insertOne(authorization);
-            closeDB();
+            const result = await authorizationsCollection.insertOne(authorization);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -37,7 +37,7 @@ class Authorization {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
             const result = await authorizationsCollection.findOne(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -49,7 +49,7 @@ class Authorization {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
             const result = authorizationsCollection.find(query);
-            closeDB();
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -60,8 +60,8 @@ class Authorization {
         try {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
-            const result = authorizationsCollection.countDocuments(query);
-            closeDB();
+            const result = await authorizationsCollection.countDocuments(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -72,8 +72,8 @@ class Authorization {
         try {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
-            const result = authorizationsCollection.updateOne(query, update);
-            closeDB();
+            const result = await authorizationsCollection.updateOne(query, update);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
@@ -84,8 +84,8 @@ class Authorization {
         try {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
-            const result = authorizationsCollection.deleteOne(query);
-            closeDB();
+            const result = await authorizationsCollection.deleteOne(query);
+            await closeDB();
             return result;
         } catch (err) {
             console.error('Errore nel recupero dati db:'+err);
