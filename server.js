@@ -12,7 +12,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 
-const randomString = require('./utils/random_string');
+const { randomString } = require('./utils/random_string');
 const User = require('./models/user');
 const File = require('./models/file');
 const Folder = require('./models/folder');
@@ -213,7 +213,7 @@ app.post('/createUser', async(req, res) => {
         User.insertOne(new User(email, password, ruolo))
             .then(() => {
                 //create work area
-                const token = generateAccessToken({"email":email, "ruolo":ruolo});
+                const token = generateAccessToken({ "email": email, "ruolo": ruolo });
                 res.json(token)
             })
             .catch((err) => {
@@ -276,7 +276,7 @@ app.get('*', (req, res) =>{
 });
 
 function generateAccessToken(user){
-    return jwt.sign({"email":user.email, "ruolo":user.ruolo}, process.env.TOKEN_SECRET, {expiresIn: '30m'});
+    return jwt.sign({ "email": user.email, "ruolo": user.ruolo }, process.env.TOKEN_SECRET, { expiresIn: '30m' });
 }
 
 function generateCTRFToken(req, res){

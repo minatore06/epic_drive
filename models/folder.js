@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { connectDB, closeDB } = require('../connection');
-const randomString = require('../utils/random_string')
+const { randomString } = require('../utils/random_string')
 
 //C - add stuff into folder
 //R - view content of folder
