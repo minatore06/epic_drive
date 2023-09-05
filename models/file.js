@@ -97,4 +97,4 @@ class File {
     }
 }
 
-module.exports = User;
+module.exports = File;
