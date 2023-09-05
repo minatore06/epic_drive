@@ -267,8 +267,8 @@ app.post('/authenticateToken', async(req, res) => {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
             console.log(err)
-            if(err.name == "TokenExpiredError")return res.sendStatus(403).location("https://ononoki.ddns.net/#out")
-            return res.sendStatus(401)
+            if(err.name == "TokenExpiredError")return res.status(403).location("https://ononoki.ddns.net/#out")
+            return res.status(401).json({message:"Token invalid"});
         }
         res.sendStatus(200);
     })
@@ -303,13 +303,13 @@ function generateCTRFToken(req, res){
 
 function authenticateToken(req, res, next){
     const token = req.headers['Authorization'].split(' ')[1]
-    if (!token) return res.sendStatus(401).json({message:'missing token'})
+    if (!token) return res.status(401).json({message:'missing token'})
 
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
             console.log(err)
-            if(err.name == "TokenExpiredError")return res.sendStatus(401).json({message:'expired token'})
-            return res.sendStatus(401).json({message:'invalid token'})
+            if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
+            return res.status(401).json({message:'invalid token'})
         }
         req.session.regenerate((err) => {
             if (err)
