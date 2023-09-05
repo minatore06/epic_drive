@@ -9,4 +9,6 @@ function randomString(length, chars) {
     return result;
 }
 
-module.export = randomString;
+module.export = {
+    randomString
+};
