@@ -205,18 +205,20 @@ app.post('/createUser', async(req, res) => {
     } catch (err) {
         return (res.status(500).send("generic internal error"));
     }
-    bcrypt.hash(password, 10, async(err, hash) => {
+    bcrypt.hash(password, 10, (err, hash) => {
         if (err)
             return (res.status(500).send("generic internal error"));
         password = hash;
         //add to db
-        let referal;
-        console.log("getting referal\n")
-        do {
-            referal = randomString(8, 'aA#');
-        } while (await User.findOne({referal:referal}));
-        console.log("got referal\n")
-        User.insertOne(new User(email, password, ruolo, referal))
+        User.insertOne(new User(email, password, ruolo, async() => {
+            let referal;
+            console.log("getting referal\n")
+            do {
+                referal = randomString(8, 'aA#');
+            } while (await User.findOne({referal:referal}));
+            console.log("got referal\n")
+            return referal;
+        }))
             .then(() => {
                 //create work area
                 const token = generateAccessToken({ "email": email, "ruolo": ruolo });
