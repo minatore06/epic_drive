@@ -58,7 +58,7 @@ function logout() {
 }
 
 function login() {
-    let email = document.getElementById('email').values;
+    let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
 
     document.getElementById("email-label").innerHTML = "<b>e-mail</b>";
@@ -99,7 +99,7 @@ function login() {
 }
 
 function signup() {
-    let email = document.getElementById('email1').values;
+    let email = document.getElementById('email1').value;
     let password = document.getElementById('password1').value;
     let rpassword = document.getElementById('password2').value;
 
