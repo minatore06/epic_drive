@@ -176,7 +176,7 @@ function create_folder(path) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
-    let url = "http://ononoki.ddns.net:8080/createdirectory?path="+path+"&name="+dir_name
+    let url = "http://ononoki.ddns.net/createdirectory?path="+path+"&name="+dir_name
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Folder created successfully");
@@ -196,7 +196,7 @@ function create_folder(path) {
 function delete_file(path, file) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net:8080/deleteFile?path="+path+"/"+file
+    let url = "http://ononoki.ddns.net/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             alert("File deleted successfully");
@@ -216,7 +216,7 @@ function delete_file(path, file) {
 function delete_dir(path, file) {
     const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net:8080/deleteDir?path="+path+"/"+file
+    let url = "http://ononoki.ddns.net/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             alert("Folder deleted successfully");
@@ -239,7 +239,7 @@ function uploadFiles(path) {
     const csrfToken = getCookieValue('_csrf_token');
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net:8080/uploadfile?path="+path
+    let url = "http://ononoki.ddns.net/uploadfile?path="+path
     var formData = new FormData();
     Array.from(files).forEach(file => {
         formData.append('file', file)
@@ -304,7 +304,7 @@ function hash(string) {
 /* 
 function getCsrfToken() {
     var xmlHttp = new XMLHttpRequest();
-    let url = "http://ononoki.ddns.net:8080/getCsrfToken";
+    let url = "http://ononoki.ddns.net/getCsrfToken";
 
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
@@ -319,5 +319,5 @@ function getCsrfToken() {
 } */
 
 const getCookieValue = (name) => (
-    return (document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || '')
+    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
 )

@@ -97,4 +97,4 @@ class Folder {
     }
 }
 
-module.exports = User;
+module.exports = Folder;

@@ -94,4 +94,4 @@ class Authorization {
     }
 }
 
-module.exports = User;
+module.exports = Authorization;

@@ -9,8 +9,11 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
-const randomString = require('utils/random_string');
-const { User, File, Folder, Authorization } = require('./models');
+const randomString = require('./utils/random_string');
+const User = require('./models/user');
+const File = require('./models/file');
+const Folder = require('./models/folder');
+const Authorization = require('./models/authorization');
 
 dotenv.config();
 process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
@@ -234,7 +237,7 @@ app.listen(8080, ()=>{
         jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
             if(err){
                 console.log(err)
-                if(err.name == "TokenExpiredError")return res.sendStatus(403).location("http://ononoki.ddns.net:8443/#out")
+                if(err.name == "TokenExpiredError")return res.sendStatus(403).location("http://ononoki.ddns.net/#out")
                 return res.sendStatus(401)
             }
             res.sendStatus(200);
