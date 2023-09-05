@@ -270,10 +270,8 @@ app.post('/authenticateToken', async(req, res) => {
             if(err.name == "TokenExpiredError")return res.status(403).location("https://ononoki.ddns.net/#out")
             return res.status(401).json({message:"Token invalid"});
         }
-        res.sendStatus(200);
+        return res.sendStatus(200);
     })
-    
-    res.json(token);
 });
 /*     app.get('/getCsrfToken', authenticateToken, (req, res) => {
     const csrfToken = req.csrfToken();
