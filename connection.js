@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb+srv://ononoki:ononokiPassword@test.t0hnfyy.mongodb.net/?retryWrites=true&w=majority';
 const dbName = 'epic-drive-db';
 const client = new MongoClient(url, {useNewUrlParser: true, useUnifiedTopology: true});
 
