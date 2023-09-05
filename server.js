@@ -60,7 +60,7 @@ app.use(express.static(__dirname+'/public'));
 app.use(express.json())
 app.use(fileUpload());
 
-app.listen(8080, ()=>{
+app.listen(80, ()=>{
     app.get('/', (req, res)=>{
         res.sendFile("./login.html", {root: __dirname})
     }),
