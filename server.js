@@ -205,6 +205,7 @@ app.post('/createUser', async(req, res) => {
     } catch (err) {
         return (res.status(500).send("generic internal error"));
     }
+    console.log("SoS")
     bcrypt.hash(password, 10, (err, hash) => {
         if (err)
             return (res.status(500).send("generic internal error"));
