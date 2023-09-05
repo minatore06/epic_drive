@@ -200,7 +200,7 @@ app.post('/createUser', async(req, res) => {
     try {
         if (await User.findOne({email:email}))
             return (res.status(403).send("email already present"));
-        if (!email || !password || !ruolo)
+        if (!email || !password)
             return (res.status(400).send("missing data"));
     } catch (err) {
         return (res.status(500).send("generic internal error"));
