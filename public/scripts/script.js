@@ -69,7 +69,7 @@ async function login() {
     if(!password)
         return (document.getElementById("password-label").innerHTML += "<br>Required field");
 
-    password = await hash(password);
+    //password = await hash(password);
     let profileJson = {
         "email": email,
         "password":password,
@@ -117,7 +117,7 @@ async function signup() {
         return (document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
 
     rpassword = null;
-    password = await hash(password);
+    //password = await hash(password);
     let profileJson = {
         "email": email,
         "password":password,
@@ -291,7 +291,7 @@ function _html5Saver(blob , fileName) {
     document.body.removeChild(a);
 }
 
-async function hash(string) {
+/* async function hash(string) {
     const utf8 = new TextEncoder().encode(string);
     const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -299,7 +299,7 @@ async function hash(string) {
         .map((bytes) => bytes.toString(16).padStart(2, '0'))
         .join('');
     return hashHex;
-}
+} */
 /* 
 function getCsrfToken() {
     var xmlHttp = new XMLHttpRequest();

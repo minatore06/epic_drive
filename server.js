@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 const randomString = require('./utils/random_string');
 const User = require('./models/user');
@@ -192,17 +193,22 @@ app.listen(80, ()=>{
         } catch (error) {
             return (res.status(500).send("generic internal error"));
         }
-        //add to db
-        User.insertOne(new User(email, password, ruolo))
-            .then(() => {
-                //create work area
-                const token = generateAccessToken({"email":email, "ruolo":ruolo});
-                res.json(token)
-            })
-            .catch((err) => {
-                console.log(err);
-                res.status(500).send("generic internal error");
-            });
+        bcrypt.hash(password, 10, (err, hash) => {
+            if (err)
+                return (res.status(500).send("generic internal error"));
+            password = hash;
+            //add to db
+            User.insertOne(new User(email, password, ruolo))
+                .then(() => {
+                    //create work area
+                    const token = generateAccessToken({"email":email, "ruolo":ruolo});
+                    res.json(token)
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).send("generic internal error");
+                });
+        });
     })
     app.post('/createAuthentication', async(req, res) => {
         let {email, password} = req.body;
@@ -220,10 +226,14 @@ app.listen(80, ()=>{
             return (res.status(500).send("generic internal error"));
         }
         //403 wrong password/email not present
-        if (user.password != password)
-            return (res.status(403).send("wrong password"));
-        const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
-        res.json(token);
+        bcrypt.compare(password, user.password, (err, result) => {
+            if (err)
+                return (res.status(500).send("generic internal error"));
+            if (!result)
+                return (res.status(403).send("wrong password"));
+            const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
+            res.json(token);
+        });
     }),
     app.get('/logout', authenticateToken, async(req, res) => {
         res.clearCookie('_csrf_token');
