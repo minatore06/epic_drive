@@ -194,13 +194,13 @@ app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
     })
 });
 app.post('/createUser', async(req, res) => {
-    let {email, password, ruolo} = req.body;
+    let {email, password, ruolo} = req.body.profilo;
 
     //search if present in db (403)
     try {
         if (await User.findOne({email:email}))
             return (res.status(403).send("email already present"));
-        if (!email || !password)
+        if (!email || !password || !ruolo)
             return (res.status(400).send("missing data"));
     } catch (err) {
         return (res.status(500).send("generic internal error"));
@@ -223,7 +223,7 @@ app.post('/createUser', async(req, res) => {
     });
 });
 app.post('/createAuthentication', async(req, res) => {
-    let {email, password} = req.body;
+    let {email, password} = req.body.profilo;
     let ruolo;
     let user;
 
