@@ -57,7 +57,7 @@ function logout() {
     xmlHttp.send();
 }
 
-function login() {
+async function login() {
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
 
@@ -69,7 +69,7 @@ function login() {
     if(!password)
         return (document.getElementById("password-label").innerHTML += "<br>Required field");
 
-    password = hash(password);
+    password = await hash(password);
     let profileJson = {
         "email": email,
         "password":password,
@@ -98,7 +98,7 @@ function login() {
     xmlHttp.send(JSON.stringify({"profilo":profileJson}));
 }
 
-function signup() {
+async function signup() {
     let email = document.getElementById('email1').value;
     let password = document.getElementById('password1').value;
     let rpassword = document.getElementById('password2').value;
@@ -117,7 +117,7 @@ function signup() {
         return (document.getElementById("password-label2").innerHTML += "<br>Password doesn't match");
 
     rpassword = null;
-    password = hash(password);
+    password = await hash(password);
     let profileJson = {
         "email": email,
         "password":password,
@@ -291,15 +291,14 @@ function _html5Saver(blob , fileName) {
     document.body.removeChild(a);
 }
 
-function hash(string) {
+async function hash(string) {
     const utf8 = new TextEncoder().encode(string);
-    return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray
+    const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
         .map((bytes) => bytes.toString(16).padStart(2, '0'))
         .join('');
-      return hashHex;
-    });
+    return hashHex;
 }
 /* 
 function getCsrfToken() {
