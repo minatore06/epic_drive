@@ -36,7 +36,7 @@ class Authorization {
         try {
             const db = await connectDB();
             const authorizationsCollection = db.collection('authorizations');
-            const result = authorizationsCollection.findOne(query);
+            const result = await authorizationsCollection.findOne(query);
             closeDB();
             return result;
         } catch (err) {

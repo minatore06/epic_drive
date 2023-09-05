@@ -42,7 +42,7 @@ class User {
         try {
             const db = await connectDB();
             const usersCollection = db.collection('users');
-            const result = usersCollection.findOne(query);
+            const result = await usersCollection.findOne(query);
             closeDB();
             return result;
         } catch (err) {

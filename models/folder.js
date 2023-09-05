@@ -39,7 +39,7 @@ class Folder {
         try {
             const db = await connectDB();
             const foldersCollection = db.collection('folders');
-            const result = foldersCollection.findOne(query);
+            const result = await foldersCollection.findOne(query);
             closeDB();
             return result;
         } catch (err) {

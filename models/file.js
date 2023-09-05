@@ -39,7 +39,7 @@ class File {
         try {
             const db = await connectDB();
             const filesCollection = db.collection('files');
-            const result = filesCollection.findOne(query);
+            const result = await filesCollection.findOne(query);
             closeDB();
             return result;
         } catch (err) {
