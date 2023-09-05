@@ -29,7 +29,7 @@ const corsOptions = {
     allowedHeaders: 'Authorization,X-Csrf-Token,Content-Type',
     exposedHeader: 'Authorization,X-Csrf-Token',
     credentials: true,
-    maxAge: 1800,
+    maxAge: 1800
 }
 
 console.log("epico")
@@ -43,7 +43,7 @@ app.use(session({
 app.use(helmet.contentSecurityPolicy({
     directives: {
         desaultSrc: ["'self'"],
-        scryptSrc: ["'self'", "'unsafe-inline'"],
+        scryptSrc: ["'self'", "'unsafe-inline'"]
     }
 }));
 app.use(helmet.noSniff());
@@ -56,9 +56,9 @@ app.use(helmet.hsts({
 app.use(helmet.frameguard({action: 'deny'}));
 app.use(cookieParser());
 app.use(cors(corsOptions));
-app.options(corsOptions, cors())
+app.options(corsOptions, cors());
 app.use(express.static(__dirname+'/public'));
-app.use(express.json())
+app.use(express.json());
 app.use(fileUpload());
 
 app.listen(80, ()=>{
