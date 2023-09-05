@@ -210,7 +210,13 @@ app.post('/createUser', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         password = hash;
         //add to db
-        User.insertOne(new User(email, password, ruolo))
+        User.insertOne(new User(email, password, ruolo, async() => {
+            let referal;
+            do {
+                referal = randomString(8, 'aA#');
+            } while (await User.findOne({referal:referal}));
+            return referal;
+        }))
             .then(() => {
                 //create work area
                 const token = generateAccessToken({ "email": email, "ruolo": ruolo });

@@ -3,8 +3,8 @@ const { connectDB, closeDB } = require('../connection');
 const { randomString } = require('../utils/random_string')
 
 class User {
-    constructor(email, password, ruolo) {
-        if (!email || !password)
+    constructor(email, password, ruolo, referal) {
+        if (!email || !password || !referal)
             return null
 
         this._id = new ObjectId();//PK
@@ -15,9 +15,7 @@ class User {
         this.signupDate = Date.now();
         this.totalSpace = 1;
         this.paidSpace = 0;
-        do {
-            this.referal = randomString(8, 'aA#');
-        } while (User.findOne({referal:this.referal}));
+        this.referal = referal;
         this.status = "Active";//Active;Blocked;Deactiveted;Deleted
         //autorizzazioni
         //log utente
