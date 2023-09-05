@@ -9,6 +9,6 @@ function randomString(length, chars) {
     return result;
 }
 
-module.export = {
+module.exports = {
     randomString
 };
