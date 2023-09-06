@@ -255,17 +255,21 @@ app.post('/createAuthentication', async(req, res) => {
         res.json(token);
     });
 });
-app.get('/logout', authenticateToken, async(req, res) => {
+app.get('/logout', async(req, res) => {
+    const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
+    if (!token) return res.status(401).json({message:'missing token'})
+
     res.clearCookie('_csrf_token');
     res.clearCookie('_csrf_hashed');
     req.session.destroy();
-    res.redirect('/');
+    res.status(200).redirect('/');
 });
 app.post('/authenticateToken', async(req, res) => {
     let {token} = req.body;
 
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
+            console.log(err)
             if(err.name == "TokenExpiredError")return res.status(403).location("https://ononoki.ddns.net/#out")
             return res.status(401).json({message:"Token invalid"});
         }
