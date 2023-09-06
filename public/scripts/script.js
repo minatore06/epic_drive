@@ -48,7 +48,7 @@ function logout() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
-                sessionStorage.setItem('token', "");
+                sessionStorage.removeItem('token');
             }
         }
     }
