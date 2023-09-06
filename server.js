@@ -304,9 +304,9 @@ function generateCTRFToken(req, res){
 //MIDDLEWARE
 
 function authenticateToken(req, res, next){
-    let token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:"";
-    if (!token) return res.status(401).json({message:'missing token'})
-    console.log(token?"sasso":"sesso")
+    if (!req.headers['authorization']) return res.status(401).json({message:'missing token'})
+    const token = req.headers['authorization'].split(' ')[1];
+
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
             console.log(err)
