@@ -299,7 +299,7 @@ function generateCTRFToken(req, res){
 
     req.session.csrfToken = require('crypto').randomBytes(128).toString('hex');
     res.cookie('_csrf_token', req.session.csrfToken, options);
-    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.sessionStore.csrfToken+process.env.CSFT_SECRET, 'binary').digest('base64'), options)
+    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.sessionStore.csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
 }
 
 //MIDDLEWARE
