@@ -26,7 +26,10 @@ function checkLogin() {
         xmlHttp.open('POST', url);
         xmlHttp.setRequestHeader("Content-Type", "application/json");
         xmlHttp.send(JSON.stringify({"token":token}));
-    }
+    }/*  else {
+        if (window.location.pathname == '/')
+            window.location.replace("https://ononoki.ddns.net/home")
+    } */
 }
 
 function toggleSignInUp(signin) {
