@@ -299,7 +299,6 @@ function generateCTRFToken(req, res){
 //MIDDLEWARE
 
 function authenticateToken(req, res, next){
-    console.log(req.headers['authorization'])
     const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
     if (!token) return res.status(401).json({message:'missing token'})
 
@@ -321,7 +320,7 @@ function authenticateToken(req, res, next){
 function checkCSRFToken(req, res, next) {
     if (!req.signedCookies['_csrf_hashed'])
         return res.status(403).json({message: 'missing token CSRF'});
-    if (require('crypto').createHash('sha256').update(req.headers['X-Csrf-Token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
+    if (require('crypto').createHash('sha256').update(req.headers['x-csrf-token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
         return res.status(403).json({message: 'token CSRF invalid'});
     next();
 }
