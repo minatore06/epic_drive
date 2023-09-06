@@ -89,7 +89,7 @@ app.get('/getfiles', authenticateToken, (req, res) => {
     if (!fullPath.includes(path.join(__dirname, 'storage')))
         return res.status(403).send();
 
-    generateCTRFToken(req);
+    generateCTRFToken(req, res);
 
     fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
         if (error) {
