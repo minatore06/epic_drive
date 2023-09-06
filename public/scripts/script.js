@@ -164,6 +164,7 @@ function get_files(directory) {
             });
             document.getElementById("file_list").innerHTML += `<button onclick='create_folder("${directory}")'>Create Folder</button>`
         }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            console.log(xmlHttp.response)
             if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
                 logout();
             alert("Access denied");
