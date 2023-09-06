@@ -25,7 +25,8 @@ process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
 
 const httpsOptions = {
     key: fs.readFileSync("server.key"),
-    cert: fs.readFileSync("server.cert")
+    cert: fs.readFileSync("server.cert"),
+    ca: fs.readFileSync("ca.pem")
 };
 
 const app = express();
