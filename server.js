@@ -224,7 +224,7 @@ app.post('/createUser', async(req, res) => {
         User.insertOne(user)
             .then(() => {
                 //create work area
-                let workArea = path.join(__dirname, 'storage', user._id);
+                let workArea = path.join(__dirname, 'storage', user._id.toString());
         
                 fs.mkdir(workArea, {recursive: true}, (err) => {
                     if (err)
