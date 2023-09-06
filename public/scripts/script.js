@@ -16,7 +16,8 @@ function checkLogin() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4) {
                 if (xmlHttp.status == 200) {
-                    window.location.replace("https://ononoki.ddns.net/home")
+                    if (window.location.pathname == '/')
+                        window.location.replace("https://ononoki.ddns.net/home")
                 }
                 else if (xmlHttp.status == 403 || xmlHttp.status == 401)
                     logout();
@@ -162,6 +163,10 @@ function get_files(directory) {
                     document.getElementById("file_list").innerHTML += `<p><div onclick='download_file("${directory}/${file.name}")'>FILE: ${file.name}</div><button onclick='delete_file("${directory}","${file.name}")'>Delete</button></p>`;
             });
             document.getElementById("file_list").innerHTML += `<button onclick='create_folder("${directory}")'>Create Folder</button>`
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
             alert("Access denied");
         }
@@ -182,7 +187,13 @@ function create_folder(path) {
             get_files(path);
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
             alert("Folder creation error");
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            if (xmlHttp.response.message == "missing CSRF token" || xmlHttp.response.message == "CSRF token invalid")
+                logout();
             alert("Access denied");
         }
     }
@@ -202,7 +213,13 @@ function delete_file(path, file) {
             get_files(path);
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
             alert("File deletion error");
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            if (xmlHttp.response.message == "missing CSRF token" || xmlHttp.response.message == "CSRF token invalid")
+                logout();
             alert("Access denied");
         }
     }
@@ -222,7 +239,13 @@ function delete_dir(path, file) {
             get_files(path);
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 400){
             alert("Folder deletion error");
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            if (xmlHttp.response.message == "missing CSRF token" || xmlHttp.response.message == "CSRF token invalid")
+                logout();
             alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 409){
             alert("Folder not empty");
@@ -246,7 +269,13 @@ function uploadFiles(path) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 201){
             alert("Upload succeded")
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
+            if (xmlHttp.response.message == "missing CSRF token" || xmlHttp.response.message == "CSRF token invalid")
+                logout();
             alert("Access denied");
         }
     }
@@ -265,6 +294,10 @@ function download_file(path){
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             let file = xmlHttp.response;
             _html5Saver(file, xmlHttp.getResponseHeader("Content-Disposition").match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1]);
+        }else if (xmlHttp.readyState == 4 && xmlHttp.status == 401) {
+            if (xmlHttp.response.message == "missing token" || xmlHttp.response.message == "invalid token" || xmlHttp.response.message == "expired token")
+                logout();
+            alert("Access denied");
         } else if (xmlHttp.readyState == 4 && xmlHttp.status == 403){
             alert("Access denied");
         }

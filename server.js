@@ -89,8 +89,6 @@ app.get('/getfiles', authenticateToken, (req, res) => {
     if (!fullPath.includes(path.join(__dirname, 'storage')))
         return res.status(403).send();
 
-    generateCTRFToken(req, res);
-
     fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
         if (error) {
             console.log(error);
@@ -222,6 +220,7 @@ app.post('/createUser', async(req, res) => {
         }))
             .then(() => {
                 //create work area
+                generateCTRFToken(req, res);
                 const token = generateAccessToken({ "email": email, "ruolo": ruolo });
                 res.json(token)
             })
@@ -252,6 +251,7 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
+        generateCTRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
     });
@@ -324,9 +324,9 @@ function authenticateToken(req, res, next){
 
 function checkCSRFToken(req, res, next) {
     if (!req.signedCookies['_csrf_hashed'])
-        return res.status(403).json({message: 'missing token CSRF'});
+        return res.status(403).json({message: 'missing CSRF token'});
     if (require('crypto').createHash('sha256').update(req.headers['x-csrf-token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
-        return res.status(403).json({message: 'token CSRF invalid'});
+        return res.status(403).json({message: 'CSRF token invalid'});
     next();
 }
 

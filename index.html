@@ -15,9 +15,9 @@
     <link rel="stylesheet" href="/styles/style.css">
     <script src="/scripts/script.js"></script>
 </head>
-<body>
+<body onload="checkLogin(), get_files('.')">
     <h1>Mina's epic drive</h1>
-    <button onclick="get_files('.')">Get List</button><br><br><br>
+    <button onclick="logout()">logout</button><br><br><br>
     <label for="fileInput">Select file to upload here:</label><br><input type="file" id="fileInput" name="fileInput" multiple>
     <button id="uploadBTN" onclick="uploadFiles('.')">Submit</button>
     <div id="file_list"></div>
