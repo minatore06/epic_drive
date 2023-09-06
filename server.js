@@ -33,8 +33,8 @@ const app = express();
 const corsOptions = {
     origin: 'https://ononoki.ddns.net',
     methods: 'GET,POST,DELETE',
-    allowedHeaders: 'Authorization,X-Csrf-Token,Content-Type',
-    exposedHeader: 'Authorization,X-Csrf-Token',
+    allowedHeaders: 'authorization,X-Csrf-Token,Content-Type',
+    exposedHeader: 'authorization,X-Csrf-Token',
     credentials: true,
     maxAge: 1800
 }
@@ -299,8 +299,8 @@ function generateCTRFToken(req, res){
 //MIDDLEWARE
 
 function authenticateToken(req, res, next){
-    console.log(req.headers['Authorization'])
-    const token = req.headers['Authorization']?req.headers['Authorization'].split(' ')[1]:null;
+    console.log(req.headers['authorization'])
+    const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
     if (!token) return res.status(401).json({message:'missing token'})
 
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
