@@ -257,8 +257,8 @@ app.post('/createAuthentication', async(req, res) => {
     });
 });
 app.get('/logout', async(req, res) => {
-    const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
-    if (!token) return res.status(401).json({message:'missing token'})
+/*     const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
+    if (!token) return res.status(401).json({message:'missing token'}) */
 
     res.clearCookie('_csrf_token');
     res.clearCookie('_csrf_hashed');
