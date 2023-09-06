@@ -21,6 +21,7 @@ const Authorization = require('./models/authorization');
 dotenv.config();
 process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.SESSION_SECRET = require('crypto').randomBytes(128).toString('hex');
+process.env.COOKIE_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
 
 const httpsOptions = {
@@ -68,7 +69,7 @@ app.use(helmet.hsts({
     preLoad: true
 }));
 app.use(helmet.frameguard({action: 'deny'}));
-app.use(cookieParser());
+app.use(cookieParser(COOKIE_SECRET));
 app.use(cors(corsOptions));
 app.options(corsOptions, cors());
 app.use(express.static(path.join(__dirname,'/public')));
