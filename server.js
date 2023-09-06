@@ -195,9 +195,11 @@ app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.post('/createUser', async(req, res) => {
     let {email, password, ruolo} = req.body.profilo;
+    let user;
 
     //search if present in db (403)
     try {
+        await User.deleteOne({email:email})
         if (await User.findOne({email:email}))
             return (res.status(403).send("email already present"));
         if (!email || !password || !ruolo)
@@ -210,7 +212,7 @@ app.post('/createUser', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         password = hash;
         //add to db
-        User.insertOne(new User(email, password, ruolo, async() => {
+        user = new User(email, password, ruolo, async() => {
             let referal;
             console.log("getting referal\n")
             do {
@@ -218,12 +220,19 @@ app.post('/createUser', async(req, res) => {
             } while (await User.findOne({referal:referal}));
             console.log("got referal\n")
             return referal;
-        }))
+        })
+        User.insertOne(user)
             .then(() => {
                 //create work area
-                generateCTRFToken(req, res);
-                const token = generateAccessToken({ "email": email, "ruolo": ruolo });
-                res.json(token)
+                let workArea = path.join(__dirname, 'storage', user._id);
+        
+                fs.mkdir(workArea, {recursive: true}, (err) => {
+                    if (err)
+                        return res.status(500).send();
+                    generateCTRFToken(req, res);
+                    const token = generateAccessToken({ "email": email, "ruolo": ruolo });
+                    res.json(token)
+                });
             })
             .catch((err) => {
                 console.log(err);
