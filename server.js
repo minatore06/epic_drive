@@ -263,7 +263,7 @@ app.get('/logout', async(req, res) => {
     res.clearCookie('_csrf_token');
     res.clearCookie('_csrf_hashed');
     req.session.destroy();
-    res.status(200).redirect('/');
+    res.redirect(200, '/');
 });
 app.post('/authenticateToken', async(req, res) => {
     let {token} = req.body;
