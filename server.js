@@ -205,7 +205,6 @@ app.post('/createUser', async(req, res) => {
 
     //search if present in db (403)
     try {
-        await User.deleteOne({email:email})
         if (await User.findOne({email:email}))
             return (res.status(403).send("email already present"));
         if (!email || !password || !ruolo)
