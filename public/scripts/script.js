@@ -53,6 +53,7 @@ function logout() {
         if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
                 sessionStorage.removeItem('token');
+                window.location.replace("https://ononoki.ddns.net/");
             }
         }
     }
