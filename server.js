@@ -69,7 +69,7 @@ app.use(helmet.hsts({
     preLoad: true
 }));
 app.use(helmet.frameguard({action: 'deny'}));
-app.use(cookieParser(COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors(corsOptions));
 app.options(corsOptions, cors());
 app.use(express.static(path.join(__dirname,'/public')));
