@@ -299,7 +299,7 @@ function generateCTRFToken(req, res){
 //MIDDLEWARE
 
 function authenticateToken(req, res, next){
-    console.log(req.headers)
+    console.log(req.headers['Authorization'])
     const token = req.headers['Authorization']?req.headers['Authorization'].split(' ')[1]:null;
     if (!token) return res.status(401).json({message:'missing token'})
 
