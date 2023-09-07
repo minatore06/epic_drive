@@ -83,7 +83,7 @@ app.get('/home', (req, res)=>{
     res.sendFile("./index.html", {root: __dirname})
 });
 app.get('/getfiles', authenticateToken, (req, res) => {
-    let user = req.session.user;
+    let user = req.session["user"];
     console.log(user);
     let fullPath = path.join(__dirname, 'storage', user.id, req.query.folder);
     let result = new Array();
