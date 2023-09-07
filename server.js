@@ -271,6 +271,7 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
+        console.log(user);
         req.session.user = {
             "id": user._id,
             "email": user.email,
