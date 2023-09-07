@@ -85,7 +85,7 @@ app.get('/home', (req, res)=>{
 app.get('/getfiles', authenticateToken, (req, res) => {
     let user = req.session.user;
     console.log(user);
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.folder);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
@@ -106,7 +106,7 @@ app.get('/getfiles', authenticateToken, (req, res) => {
 });
 app.get('/sendfile', authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -125,7 +125,7 @@ app.get('/sendfile', authenticateToken, (req, res) => {
 });
 app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.path, req.query.name);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path, req.query.name);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -139,7 +139,7 @@ app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
     let files = req.files.file;
     console.log(fullPath);
     console.log(files);
@@ -168,7 +168,7 @@ app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -184,7 +184,7 @@ app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user._id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -230,12 +230,15 @@ app.post('/createUser', async(req, res) => {
         User.insertOne(user)
             .then(() => {
                 //create work area
-                let workArea = path.join(__dirname, 'storage', user._id.toString());
+                let workArea = path.join(__dirname, 'storage', user.id.toString());
         
                 fs.mkdir(workArea, {recursive: true}, (err) => {
                     if (err)
                         return res.status(500).send();
-                    req.session.user = user;
+                    req.session.user = {
+                        "id": user._id,
+                        "email": user.email,
+                    }
                     generateCTRFToken(req, res);
                     const token = generateAccessToken({ "email": email, "ruolo": ruolo });
                     res.json(token)
@@ -268,7 +271,10 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
-        req.session.user = user;
+        req.session.user = {
+            "id": user._id,
+            "email": user.email,
+        }
         generateCTRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
