@@ -336,8 +336,8 @@ function authenticateToken(req, res, next){
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
             return res.status(401).json({message:'invalid token'})
         }
+        console.log(req.session["user"])
         user = req.session["user"];
-        console.log(user)
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
