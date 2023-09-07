@@ -236,7 +236,7 @@ app.post('/createUser', async(req, res) => {
                     if (err)
                         return res.status(500).send();
                     req.session.user = {
-                        "id": user._id,
+                        "id": user._id.toString(),
                         "email": user.email,
                     }
                     generateCTRFToken(req, res);
@@ -273,7 +273,7 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(403).send("wrong password"));
         console.log(user);
         req.session.user = {
-            "id": user._id,
+            "id": user._id.toString(),
             "email": user.email,
         }
         generateCTRFToken(req, res);
