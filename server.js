@@ -337,10 +337,12 @@ function authenticateToken(req, res, next){
             return res.status(401).json({message:'invalid token'})
         }
         user = req.session["user"];
+        console.log(user)
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
             req.session["user"] = user
+            console.log(req.session["user"])
             next()
         })
     })
