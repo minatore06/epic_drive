@@ -83,9 +83,9 @@ app.get('/home', (req, res)=>{
     res.sendFile("./index.html", {root: __dirname})
 });
 app.get('/getfiles', authenticateToken, (req, res) => {
-    let id = req.session["id"];
-    console.log(id);
-    let fullPath = path.join(__dirname, 'storage', id, req.query.folder);
+    let user = req.session["user"];
+    console.log(user);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
@@ -235,10 +235,11 @@ app.post('/createUser', async(req, res) => {
                 fs.mkdir(workArea, {recursive: true}, (err) => {
                     if (err)
                         return res.status(500).send();
-                    req.session.user = {}
-                    req.session.user["id"] = user._id.toString();
-                    req.session.user["email"] = user.email;
-                    generateCTRFToken(req, res);
+                    req.session.user = {
+                        "id": user._id.toString(),
+                        "email": user.email,
+                    }
+                    generateCSRFToken(req, res);
                     const token = generateAccessToken({ "email": email, "ruolo": ruolo });
                     res.json(token)
                 });
@@ -270,10 +271,12 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
-        req.session["id"] = user._id.toString();
-        req.session.email = user.email;
-        console.log(req.session["id"]);
-        generateCTRFToken(req, res);
+        req.session.user = {
+            "id": user._id.toString(),
+            "email": user.email,
+        }
+        console.log(req.session.user["id"]);
+        generateCSRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
     });
@@ -311,7 +314,7 @@ function generateAccessToken(user){
     return jwt.sign({ "email": user.email, "ruolo": user.ruolo }, process.env.TOKEN_SECRET, { expiresIn: '30m' });
 }
 
-function generateCTRFToken(req, res){
+function generateCSRFToken(req, res){
     let options = {
         //maxAge:
         httpOnly: true,
@@ -320,7 +323,7 @@ function generateCTRFToken(req, res){
 
     req.session.csrfToken = require('crypto').randomBytes(128).toString('hex');
     res.cookie('_csrf_token', req.session.csrfToken, options);
-    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.sessionStore.csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
+    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.session.csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
 }
 
 //MIDDLEWARE
@@ -335,10 +338,11 @@ function authenticateToken(req, res, next){
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
             return res.status(401).json({message:'invalid token'})
         }
+        user = req.session.user;
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
-            //req.session.user = user
+            req.session.user = user
             next()
         })
     })
