@@ -84,7 +84,7 @@ app.get('/home', (req, res)=>{
 });
 app.get('/getfiles', authenticateToken, (req, res) => {
     let user = req.session["user"];
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.folder);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
@@ -105,7 +105,7 @@ app.get('/getfiles', authenticateToken, (req, res) => {
 });
 app.get('/sendfile', authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -124,7 +124,7 @@ app.get('/sendfile', authenticateToken, (req, res) => {
 });
 app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path, req.query.name);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.path, req.query.name);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -138,7 +138,7 @@ app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.path);
     let files = req.files.file;
     console.log(fullPath);
     console.log(files);
@@ -167,7 +167,7 @@ app.post('/uploadfile', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -183,7 +183,7 @@ app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
 });
 app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
     let user = req.session.user;
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.path);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.path);
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
@@ -235,7 +235,7 @@ app.post('/createUser', async(req, res) => {
                     if (err)
                         return res.status(500).send();
                     req.session.user = {
-                        "id": user._id,
+                        "id": user._id.toString(),
                         "email": user.email,
                     }
                     generateCSRFToken(req, res);
@@ -271,7 +271,7 @@ app.post('/createAuthentication', async(req, res) => {
         if (!result)
             return (res.status(403).send("wrong password"));
         req.session.user = {
-            "id": user._id,
+            "id": user._id.toString(),
             "email": user.email,
         }
         generateCSRFToken(req, res);
