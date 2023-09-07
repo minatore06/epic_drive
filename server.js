@@ -271,11 +271,11 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
-        console.log(user._id.toString());
         req.session.user = {
             "id": user._id.toString(),
             "email": user.email,
         }
+        console.log(req.session.user.id);
         generateCTRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
