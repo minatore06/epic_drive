@@ -320,8 +320,8 @@ function generateCSRFToken(req, res){
     }
 
     req.session.csrfToken = require('crypto').randomBytes(128).toString('hex');
-    res.cookie('_csrf_token', req.session.csrfToken, options);
-    res.cookie('_csrf_hased', require('crypto').createHash('sha256').update(req.session.csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
+    res.signedCookies('_csrf_token', req.session.csrfToken, options);
+    res.signedCookies('_csrf_hased', require('crypto').createHash('sha256').update(req.session.csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
 }
 
 //MIDDLEWARE
