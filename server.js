@@ -84,13 +84,12 @@ app.get('/home', (req, res)=>{
 });
 app.get('/getfiles', authenticateToken, (req, res) => {
     let user = req.session["user"];
-    console.log(user);
-    let fullPath = path.join(__dirname, 'storage', user.id, req.query.folder);
+    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
-        return res.status(403).send();
+        return res.status(403).json({"message":"access denied"});
 
     fs.readdir(fullPath, { withFileTypes: true }, (error, files) => {
         if (error) {
@@ -110,7 +109,7 @@ app.get('/sendfile', authenticateToken, (req, res) => {
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
-        return res.status(403).send();
+        return res.status(403).json({"message":"access denied"});
 
     res.download(fullPath, (error) => {
         if (error){
@@ -129,7 +128,7 @@ app.post('/createdirectory', checkCSRFToken, authenticateToken, (req, res) => {
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
-        return res.status(403).send();
+        return res.status(403).json({"message":"access denied"});
 
     fs.mkdir(fullPath, {recursive: true}, (err) => {
         if (err)
@@ -172,7 +171,7 @@ app.delete('/deleteFile', checkCSRFToken, authenticateToken, (req, res) => {
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
-        return res.status(403).send();
+        return res.status(403).json({"message":"access denied"});
 
     fs.unlink(fullPath, (err) => {
         if (err){
@@ -188,7 +187,7 @@ app.delete('/deleteDir', checkCSRFToken, authenticateToken, (req, res) => {
     console.log(fullPath);
 
     if (!fullPath.includes(path.join(__dirname, 'storage')))
-        return res.status(403).send();
+        return res.status(403).json({"message":"access denied"});
     
     fs.rmdir(fullPath, (err) => {
         if (err){
@@ -275,7 +274,6 @@ app.post('/createAuthentication', async(req, res) => {
             "id": user._id.toString(),
             "email": user.email,
         }
-        console.log(req.session.user["id"]);
         generateCSRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
