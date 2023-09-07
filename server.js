@@ -275,7 +275,7 @@ app.post('/createAuthentication', async(req, res) => {
             "id": user._id.toString(),
             "email": user.email,
         }
-        console.log(req.session.user.id);
+        console.log(req.session.user["id"]);
         generateCTRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
         res.json(token);
@@ -341,7 +341,7 @@ function authenticateToken(req, res, next){
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
-            req.session.user = user
+            //req.session.user = user
             next()
         })
     })
