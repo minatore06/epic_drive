@@ -85,7 +85,7 @@ app.get('/home', (req, res)=>{
 app.get('/getfiles', authenticateToken, (req, res) => {
     let user = req.session.user;
     console.log(user);
-    let fullPath = path.join(__dirname, 'storage', user.id.toString(), req.query.folder);
+    let fullPath = path.join(__dirname, 'storage', user.id, req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
