@@ -229,13 +229,13 @@ app.post('/createUser', async(req, res) => {
         User.insertOne(user)
             .then(() => {
                 //create work area
-                let workArea = path.join(__dirname, 'storage', user.id.toString());
+                let workArea = path.join(__dirname, 'storage', user._id.toString());
         
                 fs.mkdir(workArea, {recursive: true}, (err) => {
                     if (err)
                         return res.status(500).send();
                     req.session.user = {
-                        "id": user._id.toString(),
+                        "id": user._id,
                         "email": user.email,
                     }
                     generateCSRFToken(req, res);
@@ -271,7 +271,7 @@ app.post('/createAuthentication', async(req, res) => {
         if (!result)
             return (res.status(403).send("wrong password"));
         req.session.user = {
-            "id": user._id.toString(),
+            "id": user._id,
             "email": user.email,
         }
         generateCSRFToken(req, res);
