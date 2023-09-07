@@ -235,10 +235,9 @@ app.post('/createUser', async(req, res) => {
                 fs.mkdir(workArea, {recursive: true}, (err) => {
                     if (err)
                         return res.status(500).send();
-                    req.session.user = {
-                        "id": user._id.toString(),
-                        "email": user.email,
-                    }
+                    req.session.user = {}
+                    req.session.user["id"] = user._id.toString();
+                    req.session.user["email"] = user.email;
                     generateCTRFToken(req, res);
                     const token = generateAccessToken({ "email": email, "ruolo": ruolo });
                     res.json(token)
@@ -271,10 +270,9 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
-        req.session.user = {
-            "id": user._id.toString(),
-            "email": user.email,
-        }
+        req.session.user = {}
+        req.session.user["id"] = user._id.toString();
+        req.session.user["email"] = user.email;
         console.log(req.session.user["id"]);
         generateCTRFToken(req, res);
         const token = generateAccessToken({"email":req.body.email, "ruolo":ruolo});
