@@ -85,7 +85,7 @@ app.get('/home', (req, res)=>{
 app.get('/getfiles', authenticateToken, (req, res) => {
     let id = req.session["id"];
     console.log(id);
-    let fullPath = path.join(__dirname, 'storage', id.toString(), req.query.folder);
+    let fullPath = path.join(__dirname, 'storage', id, req.query.folder);
     let result = new Array();
     console.log(fullPath);
 
@@ -236,7 +236,7 @@ app.post('/createUser', async(req, res) => {
                     if (err)
                         return res.status(500).send();
                     req.session.user = {}
-                    req.session.user["id"] = user._id;
+                    req.session.user["id"] = user._id.toString();
                     req.session.user["email"] = user.email;
                     generateCTRFToken(req, res);
                     const token = generateAccessToken({ "email": email, "ruolo": ruolo });
@@ -270,7 +270,7 @@ app.post('/createAuthentication', async(req, res) => {
             return (res.status(500).send("generic internal error"));
         if (!result)
             return (res.status(403).send("wrong password"));
-        req.session.id = user._id.toString();
+        req.session["id"] = user._id.toString();
         req.session.email = user.email;
         console.log(req.session["id"]);
         generateCTRFToken(req, res);
