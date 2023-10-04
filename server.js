@@ -45,9 +45,10 @@ console.log("epico")
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
     secret:process.env.SESSION_SECRET,
-    resave:true,
+    resave:false,
     saveUninitialized: true,
     cookie: {secure: true, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
 }));
@@ -69,7 +70,6 @@ app.use(helmet.hsts({
     preLoad: true
 }));
 app.use(helmet.frameguard({action: 'deny'}));
-app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors(corsOptions));
 app.options(corsOptions, cors());
 app.use(express.static(path.join(__dirname,'/public')));
@@ -336,6 +336,7 @@ function authenticateToken(req, res, next){
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
             return res.status(401).json({message:'invalid token'})
         }
+        console.log(req.sessionID)
         console.log(req.session["user"])
         user = req.session["user"];
         req.session.regenerate((err) => {
