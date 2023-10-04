@@ -328,7 +328,7 @@ function generateCSRFToken(req, res){
 
 function authenticateToken(req, res, next){
     const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
-    const sessionId = req.signedCookies['connect.sid'];
+    const sessionId = req.signedCookies;
     if (!token || token == "null") return res.status(401).json({message:'missing token'})
     
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
