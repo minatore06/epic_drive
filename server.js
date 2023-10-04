@@ -345,7 +345,7 @@ function authenticateToken(req, res, next){
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
-            req.session["user"] = user;
+            req.session["user"] = { ...user };
             console.log("renewed session: " + req.session["user"])
             next()
         })
