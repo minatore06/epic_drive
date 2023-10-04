@@ -332,6 +332,7 @@ function authenticateToken(req, res, next){
     if (!token || token == "null") return res.status(401).json({message:'missing token'})
     
     jwt.verify(token, process.env.TOKEN_SECRET, (err)=>{
+        let oldSes;
         let user;
         if(err){
             console.log(err)
@@ -341,11 +342,13 @@ function authenticateToken(req, res, next){
         console.log("current session ID: " + req.sessionID)
         console.log("client session ID: " + sessionId)
         console.log("session: " + req.session["user"])
+        oldSes = req.session;
         user = req.session["user"];
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
-            req.session["user"] = { ...user };
+            Object.assign(req.session, oldSes);
+            Object.assign(req.session["user"], user);
             console.log("renewed session: " + req.session["user"])
             next()
         })
