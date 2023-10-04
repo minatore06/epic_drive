@@ -328,10 +328,10 @@ function generateCSRFToken(req, res){
 
 function authenticateToken(req, res, next){
     const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
-    const sessionId = req.signedCookies;
+    const sessionId = req.signedCookies['connect.sid'];
     if (!token || token == "null") return res.status(401).json({message:'missing token'})
     
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
+    jwt.verify(token, process.env.TOKEN_SECRET, (err)=>{
         if(err){
             console.log(err)
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
@@ -339,13 +339,11 @@ function authenticateToken(req, res, next){
         }
         console.log(req.sessionID)
         console.log(sessionId)
-        req.sessionID = sessionId;
+        //req.sessionID = sessionId;
         console.log(req.session["user"])
-        user = req.session["user"];
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
-            req.session["user"] = user
             console.log(req.session["user"])
             next()
         })
