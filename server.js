@@ -332,6 +332,7 @@ function authenticateToken(req, res, next){
     if (!token || token == "null") return res.status(401).json({message:'missing token'})
     
     jwt.verify(token, process.env.TOKEN_SECRET, (err)=>{
+        let user;
         if(err){
             console.log(err)
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
@@ -339,11 +340,12 @@ function authenticateToken(req, res, next){
         }
         console.log("current session ID: " + req.sessionID)
         console.log("client session ID: " + sessionId)
-        //req.sessionID = sessionId;
         console.log("session: " + req.session["user"])
+        user = req.session["user"];
         req.session.regenerate((err) => {
             if (err)
                 return res.status(500).json({message: 'failed to renew session'})
+            req.session["user"] = user;
             console.log("renewed session: " + req.session["user"])
             next()
         })
