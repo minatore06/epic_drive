@@ -337,7 +337,7 @@ function authenticateToken(req, res, next){
             if(err.name == "TokenExpiredError")return res.status(401).json({message:'expired token'})
             return res.status(401).json({message:'invalid token'})
         }
-        console.log(req.sessionID)
+        //console.log(req.sessionID)
         console.log(sessionId)
         req.sessionID = sessionId;
         console.log(req.session["user"])
