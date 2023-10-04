@@ -50,7 +50,7 @@ app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized: true,
-    cookie: {secure: false, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
+    cookie: {secure: true, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
 }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
@@ -328,6 +328,7 @@ function generateCSRFToken(req, res){
 
 function authenticateToken(req, res, next){
     const token = req.headers['authorization']?req.headers['authorization'].split(' ')[1]:null;
+    const sessionId = req.cookies['connect.sid'];
     if (!token || token == "null") return res.status(401).json({message:'missing token'})
     
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
@@ -337,6 +338,8 @@ function authenticateToken(req, res, next){
             return res.status(401).json({message:'invalid token'})
         }
         console.log(req.sessionID)
+        console.log(sessionId)
+        req.sessionID = sessionId;
         console.log(req.session["user"])
         user = req.session["user"];
         req.session.regenerate((err) => {
