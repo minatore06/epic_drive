@@ -23,7 +23,7 @@ process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.SESSION_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.COOKIE_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
-process.env.CSRF_HASH = require('crypto').createHash('sha256');
+const CSRF_HASH = require('crypto').createHash('sha256');
 
 const httpsOptions = {
     key: fs.readFileSync("server.key"),
