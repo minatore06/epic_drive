@@ -341,11 +341,9 @@ function authenticateToken(req, res, next){
         }
         console.log("1current session ID1: " + req.sessionID)
         console.log("1client session ID1: " + sessionId)
-        console.log("1session1: " + req.session["user"])
         req.sessionID = sessionId;
         console.log("2current session ID2: " + req.sessionID)
         console.log("2client session ID2: " + sessionId)
-        console.log("2session2: " + req.session["user"])
         oldSes = req.session;
         user = req.session["user"];
         req.session.regenerate((err) => {
@@ -354,7 +352,6 @@ function authenticateToken(req, res, next){
             console.log("new session ID: " + req.sessionID)
             Object.assign(req.session, oldSes);
             Object.assign(req.session["user"], user);
-            console.log("renewed session: " + req.session["user"])
             next()
         })
     })

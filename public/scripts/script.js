@@ -201,7 +201,7 @@ function create_folder(path) {
             let response = JSON.parse(xmlHttp.response);
             if (response.message == "missing CSRF token" || response.message == "CSRF token invalid")
                 logout();
-            alert("Access denied");
+            alert("Access denied " + response.message);
         }
     }
     xmlHttp.open("POST", url, true)
