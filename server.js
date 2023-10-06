@@ -322,7 +322,7 @@ function generateCSRFToken(req, res){
 
     req.session.csrfHash = require('crypto').createHash('sha256'); 
     res.cookie('_csrf_token', csrfToken, options);
-    res.cookie('_csrf_hashed', csrfHash.update(csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
+    res.cookie('_csrf_hashed', req.session.csrfHash.update(csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
 }
 
 //MIDDLEWARE
