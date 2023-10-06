@@ -361,7 +361,7 @@ function authenticateToken(req, res, next){
 function checkCSRFToken(req, res, next) {
     if (!req.signedCookies['_csrf_hashed'] || !req.signedCookies['_csrf_token'] || !req.session.csrfHash)
         return res.status(403).json({message: 'missing CSRF token'});
-    if (req.session.csrfHash.copy().update(req.signedCookies['_csrf_token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
+    if (req.session["csrfHash"].copy().update(req.signedCookies['_csrf_token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
         return res.status(403).json({message: 'CSRF token invalid'});
     next();
 }
