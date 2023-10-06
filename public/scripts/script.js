@@ -182,7 +182,6 @@ function get_files(directory) {
 }
 
 function create_folder(path) {
-    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let dir_name = window.prompt("Folder name", "folder");
     let url = "https://ononoki.ddns.net/createdirectory?path="+path+"&name="+dir_name
@@ -205,13 +204,11 @@ function create_folder(path) {
         }
     }
     xmlHttp.open("POST", url, true)
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function delete_file(path, file) {
-    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "https://ononoki.ddns.net/deleteFile?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -233,13 +230,11 @@ function delete_file(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function delete_dir(path, file) {
-    const csrfToken = getCookieValue('_csrf_token');
     var xmlHttp = new XMLHttpRequest();
     let url = "https://ononoki.ddns.net/deleteDir?path="+path+"/"+file
     xmlHttp.onreadystatechange = function () {
@@ -263,13 +258,11 @@ function delete_dir(path, file) {
         }
     }
     xmlHttp.open("DELETE", url, true)
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send()
 }
 
 function uploadFiles(path) {
-    const csrfToken = getCookieValue('_csrf_token');
     let files = document.getElementById("fileInput").files;
     var xmlHttp = new XMLHttpRequest();
     let url = "https://ononoki.ddns.net/uploadfile?path="+path
@@ -293,7 +286,6 @@ function uploadFiles(path) {
         }
     }
     xmlHttp.open("POST", url, true)
-    xmlHttp.setRequestHeader('X-Csrf-Token', csrfToken)
     xmlHttp.setRequestHeader('Authorization', `Bearer ${sessionStorage.getItem('token')}`);
     xmlHttp.send(formData)
     alert("SALTO!!!");
