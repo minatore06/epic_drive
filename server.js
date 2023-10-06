@@ -23,6 +23,7 @@ process.env.TOKEN_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.SESSION_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.COOKIE_SECRET = require('crypto').randomBytes(128).toString('hex');
 process.env.CSRF_SECRET = require('crypto').randomBytes(128).toString('hex');
+process.env.CSRF_HASH = require('crypto').createHash('sha256');
 
 const httpsOptions = {
     key: fs.readFileSync("server.key"),
@@ -320,9 +321,8 @@ function generateCSRFToken(req, res){
     }
     let csrfToken = require('crypto').randomBytes(128).toString('hex');
 
-    req.session.csrfHash = require('crypto').createHash('sha256'); 
     res.cookie('_csrf_token', csrfToken, options);
-    res.cookie('_csrf_hashed', req.session["csrfHash"].copy().update(csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
+    res.cookie('_csrf_hashed', process.env.CSRF_HASH.copy().update(csrfToken+process.env.CSRF_SECRET, 'binary').digest('base64'), options)
 }
 
 //MIDDLEWARE
@@ -359,9 +359,9 @@ function authenticateToken(req, res, next){
 }
 
 function checkCSRFToken(req, res, next) {
-    if (!req.signedCookies['_csrf_hashed'] || !req.signedCookies['_csrf_token'] || !req.session["csrfHash"])
+    if (!req.signedCookies['_csrf_hashed'] || !req.signedCookies['_csrf_token'])
         return res.status(403).json({message: 'missing CSRF token'});
-    if (req.session["csrfHash"].copy().update(req.signedCookies['_csrf_token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
+    if (process.env.CSRF_HASH.copy().update(req.signedCookies['_csrf_token']+process.env.CSFT_SECRET, 'binary').digest('base64') !== req.signedCookies['_csrf_hashed'])
         return res.status(403).json({message: 'CSRF token invalid'});
     next();
 }
