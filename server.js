@@ -51,7 +51,7 @@ app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized: true,
-    cookie: {secure: true, httpOnly: true, sameSite:'strict', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
+    cookie: {secure: true, httpOnly: true, sameSite:'lax', maxAge: 60 * 30 * 1000}//cambiare a true quando impostato https
 }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
