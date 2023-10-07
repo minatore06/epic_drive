@@ -342,7 +342,7 @@ function authenticateToken(req, res, next){
         }
         console.log("1current session ID1: " + req.sessionID)
         console.log("1client session ID1: " + sessionId)
-        //req.sessionID = sessionId;
+        req.sessionID = sessionId;
         console.log("2current session ID2: " + req.sessionID)
         console.log("2client session ID2: " + sessionId)
         oldSes = req.session;
