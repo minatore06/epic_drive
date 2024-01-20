@@ -366,8 +366,8 @@ function checkCSRFToken(req, res, next) {
     next();
 }
 
-https.createServer(httpsOptions, app).listen(443, (req, res) => {
-    console.log("Server listening port 443");
+https.createServer(httpsOptions, app).listen(80, (req, res) => {
+    console.log("Server listening port 80");
 });
 /*
 admin (authenticated, access to everything)
