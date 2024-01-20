@@ -34,7 +34,7 @@ const httpsOptions = {
 const app = express();
 
 const corsOptions = {
-    origin: 'https://ononoki.ddns.net',
+    origin: 'https://ononoki.it',
     methods: 'GET,POST,DELETE',
     allowedHeaders: 'authorization,Content-Type',
     exposedHeader: 'authorization',
@@ -55,12 +55,12 @@ app.use(session({
 }));
 app.use(helmet.contentSecurityPolicy({
     directives: {
-        defaultSrc: ["'self'",'ononoki.ddns.net'],
-        scriptSrc: ["'self'", "'unsafe-inline'",'ononoki.ddns.net'],
-        scriptSrcAttr: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
-        styleSrc: ["'self'","'unsafe-inline'",'ononoki.ddns.net'],
-        imgSrc: ["'self'",'ononoki.ddns.net'],
-        connectSrc: ["'self'",'ononoki.ddns.net'],
+        defaultSrc: ["'self'",'ononoki.it'],
+        scriptSrc: ["'self'", "'unsafe-inline'",'ononoki.it'],
+        scriptSrcAttr: ["'self'","'unsafe-inline'",'ononoki.it'],
+        styleSrc: ["'self'","'unsafe-inline'",'ononoki.it'],
+        imgSrc: ["'self'",'ononoki.it'],
+        connectSrc: ["'self'",'ononoki.it'],
     }
 }));
 app.use(helmet.noSniff());
@@ -295,7 +295,7 @@ app.post('/authenticateToken', async(req, res) => {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user)=>{
         if(err){
             console.log(err)
-            if(err.name == "TokenExpiredError")return res.status(403).location("https://ononoki.ddns.net/#out")
+            if(err.name == "TokenExpiredError")return res.status(403).location("https://ononoki.it/#out")
             return res.status(401).json({message:"Token invalid"});
         }
         return res.sendStatus(200);
